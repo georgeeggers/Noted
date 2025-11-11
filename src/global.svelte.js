@@ -1,6 +1,6 @@
 export let settings = $state({
     noteWidth: 500,
-    imageWidth: 750
+    imageWidth: 500
 })
 
 const encoder = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+\`~,./<>?;\':\"[]{}\\|";

@@ -4,9 +4,9 @@
   import { appState, boards, getID, settings, nodes, updateDif, difs } from '../global.svelte';
   import { scale } from 'svelte/transition';
 
-  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall } from '@lucide/svelte';
+  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy } from '@lucide/svelte';
   import { onMount } from 'svelte';
-    import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
+    import { deleteAllLocal, loadLocal, saveLocal, saveServer } from '../backend.svelte';
 
   let selected = $state(-1);
 
@@ -44,8 +44,6 @@
 
     updateDif(n[0], "delete");
   }
-
-
 
   // movement logic
 
@@ -94,6 +92,12 @@
       document.removeEventListener('contextmenu', (event) => { 
         event.preventDefault(); 
       });
+
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 's' && e.ctrlKey){
+          boards[appState.selectedBoard].isLocalSaved ? saveLocal() : saveServer()
+        }
+      })
 
 
       document.addEventListener('mousedown', globalMouseDown);
@@ -146,9 +150,54 @@
   }
 
 
+  async function handleFileChange(e, n){ 
+    if(e.type == "change"){
+      n.file = e.target.files[0];
+    } else if (e.type == "drop"){
+      e.preventDefault();
+      n.file = e.dataTransfer.files[0];
+    }
+  };
 
+  const get_thumbnail = (file) => {
+    try {
+      const url = URL.createObjectURL(file);
+      return url;
+    } catch {
+
+    }
+  }
+
+  const download = (n) => {
+    const url = get_thumbnail(n.file);
+    const manager = document.getElementById('linkManager');
+    // @ts-ignore
+    manager.download = n.file.name;
+    // @ts-ignore
+    manager.href = url;
+    manager.click();
+  }
+
+  const copy = async (n) => {
+    try {
+      let text;
+      if(n.type == "note"){
+        if(n.title != ""){
+          text = n.title + '\n' + n.content;
+        } else {
+          text = n.content;
+        }
+      }
+
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error('Failed to copy text: ', error);
+    }
+  }
 
 </script>
+
+<a id='linkManager' class='invis'>Link Manager</a>
 
 <div class="globalArea">
 
@@ -186,6 +235,59 @@
               <p>{n.content}</p>
           {/if}
 
+        {:else if n.type == 'image'}
+
+          {#if n.editing}
+            <input
+              type="file"
+              onchange={(event) => handleFileChange(event, n)}
+              id="uploadTrigger{n.id}"
+              style="visibility: hidden; position: fixed;"
+            >
+          {/if}
+
+          {#if n.file != null}
+            <label for="uploadTrigger{n.id}"
+              class="imagePlaceholder"
+              ondrop={(e) => handleFileChange(e, n)}
+              ondragover={(e) => e.preventDefault()}
+            >
+              <img src="{get_thumbnail(n.file)}" class="thumbnailImage" alt="thumbnail" draggable="false"/>
+            </label>
+          {:else}
+            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+                ondrop={(e) => handleFileChange(e, n)}
+                ondragover={(e) => e.preventDefault()}
+            >
+              <Upload size={64} />
+            </label>
+          {/if}
+
+        {:else if n.type == 'file'}
+          {#if n.editing}
+            <input
+              type="file"
+              onchange={(event) => handleFileChange(event, n)}
+              id="uploadTrigger{n.id}"
+              style="visibility: hidden; position: fixed;"
+            >
+          {/if}
+
+          {#if n.file != null}
+            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+                ondrop={(e) => handleFileChange(e, n)}
+                ondragover={(e) => e.preventDefault()}
+            >
+              <File size={64} />
+            </label>
+          {:else}
+            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+                ondrop={(e) => handleFileChange(e, n)}
+                ondragover={(e) => e.preventDefault()}
+            >
+              <Upload size={64} />
+            </label>
+          {/if}
         {/if}
 
         <span class="controlBar">
@@ -196,6 +298,16 @@
           <button class="controlButton" onclick={() => deleteNode(i)}>
             <Trash size={20} />
           </button>
+
+          {#if n.type == "file" || n.type == "image"}
+            <button class="controlButton" onclick={() => download(n)}>
+              <Download size={20} />
+            </button>
+          {:else}
+            <button class="controlButton" onclick={() => copy(n)}>
+              <Copy size={20} />
+            </button>
+          {/if}
 
           <button class='controlButton' 
             onmousedown={(e) => startDragDesktop(e, n)}
@@ -225,7 +337,7 @@
       <ListTodo size={24} />
     </button>
 
-    <button onclick={() => addNode("file")}>
+    <button onclick={() => addNode("image")}>
       <Image size={24} />
     </button>
 
@@ -239,7 +351,7 @@
       <LayoutGrid size={24}/>
     </button>
 
-    <button>
+    <button onclick={deleteAllLocal}>
       <Settings2 size={24}/>
     </button>
 
@@ -262,6 +374,23 @@
 </div>
 
 <style>
+
+  .hover {
+    transition: 
+      250ms ease
+    ;
+  }
+
+  .hover:hover {
+    color: var(--main-color);
+  }
+
+
+  .thumbnailImage {
+    border-radius: 5px;
+    width: 100%;
+  }
+
 
   .nodeSelector button, .headerBar button {
     border: none;
@@ -434,6 +563,14 @@
 
   button {
     outline: none !important;
+  }
+
+  
+  .imagePlaceholder{
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
   }
 
 </style>
