@@ -1,0 +1,28 @@
+Pegboard 2.0
+Aka noted
+aka 
+
+[ ] Add different node types
+    [ ] Text formatting node where you can use different text options to format text like * for highlight or ``` for code
+    [ ] Text node
+    [ ] Todo node
+    [ ] File node (stores files, plays music, displays images)
+    [ ] Different graph nodes for displaying various types of numerical data
+    [ ] Grouper node where you can drag and drop multiple nodes into one larger node
+[ ] Font picker
+[ ] Option to connect to pocketbase
+
+[X] Figure out node chooser UI
+[ ] Add a server setup utility
+
+TAURI ONLY
+
+[ ] Save to fs on desktop app version - write a SQL interface using SQlite 
+    [ ] Have saving of nodes occur when you control S or hit save on sidebar selector
+    [ ] Create a dif system which keeps track of any changes made (creating nodes, updating nodes, deleting nodes) for easier SQL interfacing
+
+
+KNOWN BUGS
+
+[ ] Some error with white spaces or something idk
+[ ] Whole lotta issues with mobile. Work on later

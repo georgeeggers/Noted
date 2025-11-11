@@ -1,0 +1,20 @@
+<script>
+  import Router, { location } from "svelte-spa-router";
+    import { routes } from "./routes.svelte";
+</script>
+
+<div class="globalContainer">
+
+  <Router routes={routes} />
+
+</div>
+
+<style>
+  .globalContainer {
+    height: 100lvh;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+
+</style>
+
