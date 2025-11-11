@@ -6,7 +6,7 @@
 
   import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall } from '@lucide/svelte';
   import { onMount } from 'svelte';
-    import { loadLocal, saveLocal, saveServer, test } from '../backend.svelte';
+    import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
 
   let selected = $state(-1);
 
