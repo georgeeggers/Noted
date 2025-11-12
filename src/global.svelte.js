@@ -52,6 +52,11 @@ export let appState = $state({
 // potential optimizations could be to just store the id for delete requests and changes for update requests
 export let difs = $state([]);
 
+export const updateDifByIndex = (index, action) => {
+    const node = nodes[index];
+    updateDif(node, action);
+}
+
 export const updateDif = (node, action) => {
     if(action == "create"){
         difs.push({

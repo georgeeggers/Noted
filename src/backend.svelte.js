@@ -8,7 +8,6 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
     if(file == null){
         resolve(null);
     }
-    console.log(file);
     const reader = new FileReader();
     reader.readAsDataURL(file);
     // @ts-ignore
@@ -21,7 +20,6 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
 // i have NO idea where the db actually exists on disk, but it works so I can't be bothered
 
 export const saveLocal = async () => {
-    console.log("saving local");
     const db = await Database.load("sqlite:data.db");
 
     // do some reasearch into how tarui interfaces with the SQL driver so we can just make one statement and hit the backend once overall instead of once for each dif
@@ -35,13 +33,25 @@ export const saveLocal = async () => {
             );
         } else if (i.action == "create"){
             let file = await toBase64(i.node.file);
+            let content;
+            if(i.node.type == 'todo'){
+                content = JSON.stringify(i.node.content);
+            } else {
+                content = i.node.content;
+            }
             const result = await db.execute(
                 'INSERT into data (id, x, y, type, title, content, file, editing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-                [i.node.id, i.node.x, i.node.y, i.node.type, i.node.title, i.node.content, file, i.node.editing ? 1 : 0]
+                [i.node.id, i.node.x, i.node.y, i.node.type, i.node.title, content, file, i.node.editing ? 1 : 0]
             );
 
         } else if (i.action == 'update'){
             let file = await toBase64(i.node.file);
+            let content;
+            if(i.node.type == 'todo'){
+                content = JSON.stringify(i.node.content);
+            } else {
+                content = i.node.content;
+            }
             const result = await db.execute(
                 'UPDATE data SET x = $1, y = $2, type = $3, title = $4, content = $5, file = $6, editing = $7 WHERE id = $8',
                 [i.node.x, i.node.y, i.node.type, i.node.title, i.node.content, file, i.node.editing ? 1 : 0, i.node.id]
@@ -70,7 +80,8 @@ export const loadLocal = async () => {
             const byteArray = new Uint8Array(byteArray1);
             i.file = new Blob([byteArray]);
             i.file.name = parts[0];
-            console.log(i.file);
+        } else if (i.type == "todo"){
+            i.content = JSON.parse(i.content);
         }
         nodes.push(i);
     }

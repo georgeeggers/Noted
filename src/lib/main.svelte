@@ -7,6 +7,7 @@
   import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy } from '@lucide/svelte';
   import { onMount } from 'svelte';
     import { deleteAllLocal, loadLocal, saveLocal, saveServer } from '../backend.svelte';
+    import Todo from './modules/todo.svelte';
 
   let selected = $state(-1);
 
@@ -21,7 +22,11 @@
       title: "",
       x: window.scrollX + window.outerWidth / 2 - 100,
       y: window.scrollY + window.outerHeight / 2 - 100,
-      content: "",
+      content: type == "todo" ? [{
+            type: 'single',
+            value: false,
+            content: ""
+        }] : "",
       editing: true,
       id: getID(),
     }
@@ -137,7 +142,6 @@
   }
 
   const endDragMobile = (e, n) => {
-    console.log("Ending mobile drag!")
     document.removeEventListener('mousemove', dragLogicMobile);
     if(n.x < 0) {
       n.x = 0;
@@ -157,6 +161,7 @@
       e.preventDefault();
       n.file = e.dataTransfer.files[0];
     }
+    updateDif(n);
   };
 
   const get_thumbnail = (file) => {
@@ -178,15 +183,33 @@
     manager.click();
   }
 
+  const handleTodoCopy = (data, depth, text) => {
+    for(let i of data){
+      for(let _i = 0; _i < depth; _i++){
+        text += " | "
+      }
+      if(i.type == "single"){
+        text += `[${i.value ? "X" : " "}] ${i.content}\n`;
+      } else {
+        text += `${i.content}\n`
+        text = handleTodoCopy(i.value, depth + 1, text);
+      }
+    }
+    return text;
+  }
+
   const copy = async (n) => {
     try {
-      let text;
+      let text = "";
       if(n.type == "note"){
         if(n.title != ""){
           text = n.title + '\n' + n.content;
         } else {
           text = n.content;
         }
+      } else {
+        text = n.title + '\n\n';
+        text = handleTodoCopy(n.content, 0, text);
       }
 
       await navigator.clipboard.writeText(text);
@@ -225,7 +248,6 @@
         {:else}
           <p class='title' style='font-size: 32px;'>{n.title}</p>
         {/if}
-
 
         {#if n.type == 'note'}
 
@@ -288,7 +310,21 @@
               <Upload size={64} />
             </label>
           {/if}
+
+        {:else if n.type == 'todo'}
+
+            <Todo bind:data={n.content} bind:editing={n.editing} depth={false} index={i} />
+
         {/if}
+
+
+
+
+
+
+
+
+
 
         <span class="controlBar">
           <button class="controlButton" onclick={() => toggleEdit(n)} style="{n.editing ? "color: var(--light-main-color); !important" : ""}">
@@ -558,7 +594,6 @@
 
   .controlButton:hover {
     color: var(--dim-main-color);
-
   }
 
   button {

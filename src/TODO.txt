@@ -1,26 +1,25 @@
-Aka noted
-aka 
+ToDo
 
-[ ] Add different node types
-    [ ] Text formatting node where you can use different text options to format text like * for highlight or ``` for code
-    [X] Text node
-    [ ] Todo node
-    [X] File node (stores files, plays music, displays images)
-     | - [ ] Add dialogue for downloading files 
-[ ] Font picker
-[ ] Option to connect to pocketbase
-
+Add Different Node Types
+ | [X] Text
+ | [X] Todo
+ | File
+ |  | [X] Image
+ |  | [X] Regular Files
+ |  | [ ] Music Player
+[ ] Font Picker
+[ ] Option to connect to pb
 [X] Figure out node chooser UI
-[ ] Add a server setup utility
+[ ] Add a server utility
+Save to fs on desktop
+ | [X] Have saving of nodes occur on control S
+ | [X] Create a dif system for easier saving with the sql interface
+ | Boards
+ |  | [ ] Add board system so the user can save to different boards
+ |  | [ ] Load data from a board on load
+ |  | [ ] Add the ability to sync certain boards to server and certain boards to local
 
-TAURI ONLY
+Bugs
 
-[X] Save to fs on desktop app version - write a SQL interface using SQlite 
-    [X] Have saving of nodes occur when you control S or hit save on sidebar selector
-    [X] Create a dif system which keeps track of any changes made (creating nodes, updating nodes, deleting nodes) for easier SQL interfacing
-
-
-KNOWN BUGS
-
-[ ] Some error with white spaces or something idk
-[ ] Whole lotta issues with mobile. Work on later
+[ ] Some Error with white spaces on fancy textbox
+[ ] Buncha issues with mobile. Work on later
