@@ -273,8 +273,9 @@
               class="imagePlaceholder"
               ondrop={(e) => handleFileChange(e, n)}
               ondragover={(e) => e.preventDefault()}
+              style="{n.editing ? "cursor: pointer;" : ""}"
             >
-              <img src="{get_thumbnail(n.file)}" class="thumbnailImage" alt="thumbnail" draggable="false"/>
+              <img src="{get_thumbnail(n.file)}" class="thumbnailImage {n.editing ? "hover" : ""}" alt="thumbnail" draggable="false"/>
             </label>
           {:else}
             <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
@@ -291,12 +292,12 @@
               type="file"
               onchange={(event) => handleFileChange(event, n)}
               id="uploadTrigger{n.id}"
-              style="visibility: hidden; position: fixed;"
+              style="visibility: hidden; position: fixed; cursor: pointer;"
             >
           {/if}
 
           {#if n.file != null}
-            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row; {n.editing ? "cursor: pointer;" : ""}"for="uploadTrigger{n.id}"
                 ondrop={(e) => handleFileChange(e, n)}
                 ondragover={(e) => e.preventDefault()}
             >
@@ -410,6 +411,14 @@
 </div>
 
 <style>
+
+  .thumbnailImage.hover:hover {
+    scale: 1.01;
+  }
+
+  .thumbnailImage.hover {
+    box-sizing: border-box;
+  }
 
   .hover {
     transition: 
