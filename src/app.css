@@ -40,6 +40,9 @@
   transition: background 250ms ease;
 }
 
+* {
+  font-family: monospace !important;
+}
 
 :root::-webkit-scrollbar {
   width: 0px; /* For Chrome, Safari, and Opera */

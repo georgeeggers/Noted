@@ -20,6 +20,10 @@ Save to fs on desktop
  |  | [X] Load data from a board on load
  |  | [ ] Add the ability to sync certain boards to server and certain boards to local
  |  | [ ] Make board UI not look like crap
+ |  | [ ] Add better UI to the main menu for board selection (# of notes, date created, etc.)
+
+[ ] Explore postgres instead of SQLite for backend driver
+
 
 Bugs
 

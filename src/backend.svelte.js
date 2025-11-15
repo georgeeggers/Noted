@@ -1,6 +1,6 @@
-import { BaseDirectory, readFile, readTextFile } from "@tauri-apps/plugin-fs";
 import Database from "@tauri-apps/plugin-sql";
 import { appState, boards, difs, getID, nodes } from "./global.svelte";
+import { replace } from "svelte-spa-router";
 
 // encode files as a base64 string for the backend. Awful way to do it, but we ball
 
@@ -124,5 +124,4 @@ export const makeLocalBoard = async (name) => {
     const id = getID();
     const result = await db.execute("INSERT into boards (id, boardType, boardName) VALUES ($1, $2, $3)", [id, "local", name]);
     appState.boards.push({id: id, boardType: "local", boardName: name});
-
 }
