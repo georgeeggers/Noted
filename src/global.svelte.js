@@ -44,7 +44,8 @@ export let boards = $state([
 export let nodes = $state([]);
 
 export let appState = $state({
-    selectedBoard: 0,
+    selectedBoard: null,
+    boards: [],
 })
 
 // this is a list of actions that the user takes on a certain board which provide easy updating for the backend later on

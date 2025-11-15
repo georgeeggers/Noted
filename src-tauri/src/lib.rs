@@ -14,7 +14,13 @@ pub fn run() {
         Migration {
             version: 1,
             description: "create_initial_tables",
-            sql: "CREATE TABLE data (id TEXT PRIMARY KEY, x INTEGER, y INTEGER, type TEXT, title TEXT, content TEXT, file BLOB, editing INTEGER);",
+            sql: "CREATE TABLE data (id TEXT PRIMARY KEY, boardID TEXT, x INTEGER, y INTEGER, type TEXT, title TEXT, content TEXT, file TEXT, editing INTEGER);",
+            kind: MigrationKind::Up
+        },
+        Migration {
+            version: 2,
+            description: "create_boards",
+            sql: " CREATE TABLE boards (id TEXT PRIMARY KEY, boardType TEXT, boardName TEXT);",
             kind: MigrationKind::Up
         }
     ];

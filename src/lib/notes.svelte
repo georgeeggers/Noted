@@ -1,18 +1,21 @@
 <script>
   // this is a custom textarea like solution for lack of support on webkit and gecko
   import Textarea from './modules/textarea.svelte';
-  import { appState, boards, getID, settings, nodes, updateDif, difs } from '../global.svelte';
-  import { scale } from 'svelte/transition';
+  import { appState, getID, settings, nodes, updateDif, difs } from '../global.svelte';
+  import { fade, fly, scale } from 'svelte/transition';
 
-  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy } from '@lucide/svelte';
+  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX } from '@lucide/svelte';
   import { onMount } from 'svelte';
     import { deleteAllLocal, loadLocal, saveLocal, saveServer } from '../backend.svelte';
     import Todo from './modules/todo.svelte';
+    import { replace } from 'svelte-spa-router';
 
   let selected = $state(-1);
 
 
   // node logic
+
+
 
 
   const addNode = (type) => {
@@ -89,9 +92,15 @@
 
   let moveDrag = $state(false);
 
-  onMount(() => {
+  onMount(async () => {
     // do this to surpress a weird error with function signatures for onMount
     if(true){
+
+      if(appState.selectedBoard.boardType == "local"){
+          await loadLocal(appState.selectedBoard.id);
+      }
+
+
       document.removeEventListener('mousedown', globalMouseDown);
       document.removeEventListener('mouseup', globalMouseUp)
       document.removeEventListener('contextmenu', (event) => { 
@@ -100,7 +109,7 @@
 
       document.addEventListener('keydown', (e) => {
         if(e.key === 's' && e.ctrlKey){
-          boards[appState.selectedBoard].isLocalSaved ? saveLocal() : saveServer()
+         appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)
         }
       })
 
@@ -216,6 +225,29 @@
     } catch (error) {
       console.error('Failed to copy text: ', error);
     }
+  }
+
+  let alertUnsaved = $state(false);
+
+  const goBack = () => {
+    if(difs.length != 0){
+      alertUnsaved = true;      
+    } else {
+      difs.length = 0;
+      nodes.length = 0;
+      replace('/');
+    }
+  }
+
+  const saveAndCont = () => {
+    appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)    
+    replace('/');
+  }
+
+  const quitNoSave = () => {
+    difs.length = 0;
+    nodes.length = 0;
+    replace('/');
   }
 
 </script>
@@ -394,23 +426,111 @@
 
   </div>
 
-  <div class="headerBar">
-    <p>{boards[appState.selectedBoard].name}</p>
-    {#if boards[appState.selectedBoard].isLocalSaved }
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="headerBar" onclick={goBack}>
+    <p>{appState.selectedBoard.boardName}</p>
+    {#if appState.selectedBoard.boardType == "local" }
       <Laptop size={20} />
     {:else}
       <Cloud size={20} />
     {/if}
     {#if difs.length > 0}
-      <button onclick={boards[appState.selectedBoard].isLocalSaved ? saveLocal : saveServer}>
+      <button onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
         <CircleSmall size={20} />
       </button>
     {/if}
   </div>
 
+  {#if alertUnsaved}
+    <div class="blocker"
+      transition:fade={{ duration: 250 }}
+    >
+
+      <div class="unsavedAlert"
+        transition:fly={{ x: 50, duration: 250 }}
+      >
+        <p>You have unsaved changes</p>
+        <div class="buttons">
+          <button onclick={saveAndCont}>
+            <CheckCircle size={20} />
+            Save
+          </button>
+          <button onclick={quitNoSave} style='background-color: var(--fail-color) !important;'>
+            <CircleX size={20} />
+            Quit
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  {/if}
+
 </div>
 
 <style>
+
+  .blocker {
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000040;
+    backdrop-filter: blur(5px);
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .unsavedAlert {
+    width: fit-content;
+    height: fit-content;
+    padding: 20px;
+    background-color: var(--light-bg-color);
+    box-sizing: border-box;
+    border-radius: 5px;
+    flex-direction: column;
+    gap: 10px;
+    display: flex;
+    color: var(--header-color);
+  }
+
+  .buttons {
+    display: flex;
+    box-sizing: border-box;
+    gap: 10px;
+    flex-direction: row;
+  }
+
+  .buttons button {
+    width: 100%;
+    background-color: var(--lighter-bg-color);
+    border: none;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 7px;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color .25s ease;
+    color: var(--text-color);
+  }
+
+  .buttons button:hover {
+    background-color: var(--lightest-bg-color);
+  }
+
+
+  .unsavedAlert p {
+    margin: 0px;
+    font-size: 16px;
+  }
+
 
   .thumbnailImage.hover:hover {
     scale: 1.01;
@@ -484,9 +604,13 @@
     border-radius: var(--border-radius);
     gap: 10px;
     color: var(--header-color);
-
+    transition: background-color .25s ease;
     backdrop-filter: blur(5px);
+    cursor: pointer;
+  }
 
+  .headerBar:hover {
+    background-color: var(--lightest-bg-color);
   }
 
   .headerBar p {

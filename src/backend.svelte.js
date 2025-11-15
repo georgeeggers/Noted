@@ -19,7 +19,9 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
 // using tauri's built in SQL plugin for interfacing with the data because i'm lazy and this is easy
 // i have NO idea where the db actually exists on disk, but it works so I can't be bothered
 
-export const saveLocal = async () => {
+export const saveLocal = async (id) => {
+    console.log(id);
+
     const db = await Database.load("sqlite:data.db");
 
     // do some reasearch into how tarui interfaces with the SQL driver so we can just make one statement and hit the backend once overall instead of once for each dif
@@ -40,9 +42,10 @@ export const saveLocal = async () => {
                 content = i.node.content;
             }
             const result = await db.execute(
-                'INSERT into data (id, x, y, type, title, content, file, editing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-                [i.node.id, i.node.x, i.node.y, i.node.type, i.node.title, content, file, i.node.editing ? 1 : 0]
+                'INSERT into data (id, boardID, x, y, type, title, content, file, editing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+                [i.node.id, id, i.node.x, i.node.y, i.node.type, i.node.title, content, file, i.node.editing ? 1 : 0]
             );
+            console.log(result);
 
         } else if (i.action == 'update'){
             let file = await toBase64(i.node.file);
@@ -62,12 +65,12 @@ export const saveLocal = async () => {
     difs.length = 0;
 }
 
-export const loadLocal = async () => {
+export const loadLocal = async (id) => {
     // do this to reset the nodes array
     nodes.length = 0;
     difs.length = 0;
     const db = await Database.load("sqlite:data.db");
-    const result = await db.select("SELECT * FROM data");
+    const result = await db.select("SELECT * FROM data WHERE boardID = $1", [id]);
     for(let i of result){
         if(i.type == "image" || i.type == "file"){
             let parts = i.file.split(' ');
@@ -87,7 +90,11 @@ export const loadLocal = async () => {
     }
 }
 
-export const saveServer = () => {
+export const loadSever = async (id) => {
+
+}
+
+export const saveServer = async (id) => {
 
 }
 
@@ -97,4 +104,25 @@ export const deleteAllLocal = async () => {
         "DELETE FROM data WHERE type = 'image' OR type = 'file'"
 
     );
+}
+
+export const loadBoards = async () => {
+    appState.boards.length = 0;
+    const db = await Database.load("sqlite:data.db");
+    const result = await db.select("SELECT * FROM boards");
+
+    for(let i of result){
+        appState.boards.push(i);
+    }
+
+    return result;
+
+}
+
+export const makeLocalBoard = async (name) => {
+    const db = await Database.load("sqlite:data.db");
+    const id = getID();
+    const result = await db.execute("INSERT into boards (id, boardType, boardName) VALUES ($1, $2, $3)", [id, "local", name]);
+    appState.boards.push({id: id, boardType: "local", boardName: name});
+
 }

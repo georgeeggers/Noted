@@ -1,4 +1,6 @@
-import Main from "./lib/main.svelte";
+import Notes from "./lib/notes.svelte";
+import MainMenu from "./lib/mainMenu.svelte";
 export const routes = {
-    "/": Main
+    "/": MainMenu,
+    "/notes": Notes
 }

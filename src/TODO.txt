@@ -11,14 +11,15 @@ Add Different Node Types
 [ ] Option to connect to pb
 [X] Figure out node chooser UI
 [ ] Add a server utility
-[ ] Update default theme to be Rosé Pine Moon (new pastel-esq theme on gh)
+[X] Update default theme to be Rosé Pine Moon (new pastel-esq theme on gh)
 Save to fs on desktop
  | [X] Have saving of nodes occur on control S
  | [X] Create a dif system for easier saving with the sql interface
  | Boards
- |  | [ ] Add board system so the user can save to different boards
- |  | [ ] Load data from a board on load
+ |  | [X] Add board system so the user can save to different boards
+ |  | [X] Load data from a board on load
  |  | [ ] Add the ability to sync certain boards to server and certain boards to local
+ |  | [ ] Make board UI not look like crap
 
 Bugs
 
