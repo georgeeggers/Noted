@@ -6,7 +6,7 @@
 
   import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX } from '@lucide/svelte';
   import { onMount } from 'svelte';
-    import { deleteAllLocal, loadLocal, saveLocal, saveServer } from '../backend.svelte';
+    import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
     import Todo from './modules/todo.svelte';
     import { replace } from 'svelte-spa-router';
 
@@ -684,6 +684,7 @@
     cursor: pointer;
     transition: background-color .25s ease;
     color: var(--text-color);
+    font-size: 14px;
   }
 
   .buttons button:hover {

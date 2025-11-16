@@ -343,6 +343,7 @@
         cursor: pointer;
         transition: background-color .25s ease;
         color: var(--text-color);
+        font-size: 14px;
     }
 
     .buttons button:hover {
