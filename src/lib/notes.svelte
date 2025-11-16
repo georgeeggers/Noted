@@ -28,8 +28,8 @@
     let n = {
       type: type,
       title: "",
-      x: window.scrollX + window.outerWidth / 2 - 100,
-      y: window.scrollY + window.outerHeight / 2 - 100,
+      x: window.scrollX + window.innerWidth / 2 - 50, // get the center of the screen for adding new nodes
+      y: window.scrollY + window.innerHeight / 2 - 50,
       content: type == "todo" ? [{
             type: 'single',
             value: false,

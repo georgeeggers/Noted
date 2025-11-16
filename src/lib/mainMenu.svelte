@@ -7,9 +7,8 @@
     import { fade, fly, scale, slide } from "svelte/transition";
     import { flip } from "svelte/animate";
 
-
-
     onMount(async () => {
+
         await loadBoards();
     });
 
