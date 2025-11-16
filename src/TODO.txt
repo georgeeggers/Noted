@@ -23,9 +23,11 @@ Save to fs on desktop
  |  | [ ] Add better UI to the main menu for board selection (# of notes, date created, etc.)
 
 [ ] Explore postgres instead of SQLite for backend driver
+[ ] Brand app (logo and whatnot)
+[ ] Ctrl R to sort notes
 
 
 Bugs
 
 [ ] Some Error with white spaces on fancy textbox
-[ ] Buncha issues with mobile. Work on later
+[-] Buncha issues with mobile. Work on later

@@ -20,7 +20,6 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
 // i have NO idea where the db actually exists on disk, but it works so I can't be bothered
 
 export const saveLocal = async (id) => {
-    console.log(id);
 
     const db = await Database.load("sqlite:data.db");
 
@@ -73,19 +72,23 @@ export const loadLocal = async (id) => {
     const result = await db.select("SELECT * FROM data WHERE boardID = $1", [id]);
     for(let i of result){
         if(i.type == "image" || i.type == "file"){
-            let parts = i.file.split(' ');
-            const bytes = atob(parts[1]);
-            const byteArray1 = [];
-            for (let i = 0; i < bytes.length; i++) {
-                const byte = bytes.charCodeAt(i);
-                byteArray1.push(byte);
+            if(i.file != null){
+                let parts = i.file.split(' ');
+                const bytes = atob(parts[1]);
+                const byteArray1 = [];
+                for (let i = 0; i < bytes.length; i++) {
+                    const byte = bytes.charCodeAt(i);
+                    byteArray1.push(byte);
+                }
+                const byteArray = new Uint8Array(byteArray1);
+                i.file = new Blob([byteArray]);
+                i.file.name = parts[0];
             }
-            const byteArray = new Uint8Array(byteArray1);
-            i.file = new Blob([byteArray]);
-            i.file.name = parts[0];
+
         } else if (i.type == "todo"){
             i.content = JSON.parse(i.content);
         }
+        i.handle = null;
         nodes.push(i);
     }
 }
@@ -124,4 +127,16 @@ export const makeLocalBoard = async (name) => {
     const id = getID();
     const result = await db.execute("INSERT into boards (id, boardType, boardName) VALUES ($1, $2, $3)", [id, "local", name]);
     appState.boards.push({id: id, boardType: "local", boardName: name});
+}
+
+export const makeServerBoard = async (name) => {
+    alert('Server boards coming soon!');
+}
+
+export const deleteBoard = async (b) => {
+    const db = await Database.load("sqlite:data.db");
+    const id = b.id;
+    let result = await db.execute('DELETE FROM boards WHERE id = $1', [id]);
+    result = await db.execute('DELETE FROM data where boardID = $1', [id]);
+    await loadBoards();
 }

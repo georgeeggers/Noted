@@ -1,5 +1,4 @@
 :root {
-  font-family: monospace !important;
   line-height: 1.5;
   font-weight: 400;
 
@@ -38,10 +37,18 @@
 
 
   transition: background 250ms ease;
+
+
+  background:
+      linear-gradient(90deg, var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+      linear-gradient(var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+      var(--text-color)
+  ;
+
 }
 
 * {
-  font-family: monospace !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 :root::-webkit-scrollbar {

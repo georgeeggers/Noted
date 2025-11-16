@@ -44,7 +44,6 @@
 
         <div class="inline">
 
-
             {#if d.type == "single"}
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -56,11 +55,9 @@
                 <Textarea bind:value={d.content} placeholder={`Item ${index + 1}`} style="max-width: fit-content; min-width: 10px;" padding={0}/>
 
                 {#if d.type == "single"}
-
                     <button class="controlButton" onclick={() => makeMulti(d)}>
                         <PlusCircle size={20} />
                     </button>
-
                 {/if}
 
                 <button class="controlButton fail" onclick={() => deleteItem(index)}>
@@ -68,34 +65,26 @@
                 </button>
 
             {:else}
-
                 <p>{d.content}</p>
-
             {/if}
 
         </div>
 
             {#if d.type == "multi"}
-
                 <Self bind:data={d.value} bind:editing={editing} depth={true} index={index}/>
-
             {/if}
-
-
     {/each}
 
     {#if editing}
 
-    <div class="inline">
-        <button class="controlButton" onclick={addData}>
-            <PlusCircle size={20} />
-        </button>
-        <p>New</p>
-    </div>
+        <div class="inline">
+            <button class="controlButton" onclick={addData}>
+                <PlusCircle size={20} />
+            </button>
+            <p>New</p>
+        </div>
 
     {/if}
-
-
 
 </div>
 

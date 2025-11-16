@@ -13,6 +13,11 @@
   let selected = $state(-1);
 
 
+  if(appState.selectedBoard == null){
+    replace('/');
+  }
+
+
   // node logic
 
 
@@ -31,6 +36,7 @@
             content: ""
         }] : "",
       editing: true,
+      file: null,
       id: getID(),
     }
 
@@ -90,6 +96,16 @@
     }
   }
 
+  const keydownLogic = async (e) => {
+    if(e.key === 's' && e.ctrlKey){
+      appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)
+    } else if (e.key === 'r' && e.ctrlKey){
+      // replace refresh with sorting
+      e.preventDefault();
+      await sort();
+    }
+  }
+
   let moveDrag = $state(false);
 
   onMount(async () => {
@@ -97,28 +113,19 @@
     if(true){
 
       if(appState.selectedBoard.boardType == "local"){
-          await loadLocal(appState.selectedBoard.id);
+        await loadLocal(appState.selectedBoard.id);
       }
 
 
       document.removeEventListener('mousedown', globalMouseDown);
       document.removeEventListener('mouseup', globalMouseUp)
-      document.removeEventListener('contextmenu', (event) => { 
-        event.preventDefault(); 
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if(e.key === 's' && e.ctrlKey){
-         appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)
-        }
-      })
+      document.removeEventListener('keydown', keydownLogic);
 
 
+      document.addEventListener('keydown', keydownLogic)
       document.addEventListener('mousedown', globalMouseDown);
       document.addEventListener('mouseup', globalMouseUp)
-      document.addEventListener('contextmenu', (event) => { 
-        event.preventDefault(); 
-      });
+
     }
   })
 
@@ -250,6 +257,167 @@
     replace('/');
   }
 
+  const gethighestY = (x, borders) => {
+    let highestY = 0;
+    for(let border of borders){
+      if(x >= border.low && x <= border.high){
+        if(border.output > highestY){
+          highestY = border.output;
+        }
+      }
+    }
+    return highestY;
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
+  let sortList = $state([])
+
+  const sort = async () => {
+
+    console.log("Sorting")
+
+    let maxY = 0;
+    let totalWidth = 0;
+    let totalHeight = 0;
+
+    sortList = [];
+
+    let index = 0;
+
+    for(let node of nodes){
+      const i = node.handle;
+      sortList.push({
+        // @ts-ignore
+        area: i.offsetWidth * i.offsetHeight,
+        // @ts-ignore
+        width: i.offsetWidth,
+        // @ts-ignore
+        height: i.offsetHeight,
+        // @ts-ignore
+        flatness: i.offsetWidth / i.offsetHeight,
+        x: 0,
+        y: 0,
+        index: index
+      });
+      // @ts-ignore
+      totalWidth += i.offsetWidth;
+      // @ts-ignore
+      totalHeight += i.offsetHeight;
+      index++;
+    }
+
+    let time = Math.round(1500 / sortList.length / 2);
+    sortList.sort((a, b) => {
+      if(a.flatness < b.flatness){
+        return 1;
+      } else if (a.flatness > b.flatness){
+        return -1;
+      }
+      if(a.height < b.height){
+        return -1;
+      } else if (a.height > b.height){
+        return 1;
+      }
+      return 0;
+    });
+
+    let idealWidth = (totalWidth / (Math.ceil(Math.sqrt(sortList.length)))) * 1.5;
+    let eclipsedWidth = 0;
+    const gap = 10;
+    let nextX = gap;
+    let nextY = gap;
+    let count = 0;
+    let layers = 0;
+    
+    let borders = [];
+    let itemLayers = [];
+    let currentLayer = [];
+
+    // lines them up horizontally
+
+    for(let i of sortList){
+      eclipsedWidth += gap + i.width;
+
+      i.x = nextX;
+      i.y = nextY;
+
+      nodes[i.index].x = nextX;
+      nodes[i.index].y = nextY;
+      if(layers == 0){
+        borders.push({
+          low: nextX,
+          high: i.width + nextX + gap,
+          output: nextY + i.height + gap
+        });
+      }
+
+      nextX += gap + i.width;
+      if(i.height > maxY){
+        maxY = i.height;
+      }
+      count++;
+      // await sleep(time);
+
+      currentLayer.push(i);
+      if(eclipsedWidth >= idealWidth){
+        eclipsedWidth = 0;
+        nextY += maxY + gap;
+        nextX = gap;
+        maxY = 0;
+        layers++;
+        itemLayers.push(currentLayer);
+        currentLayer = [];
+      }
+      updateDif(nodes[i.index], "update");
+      await sleep(time);
+    }
+    itemLayers.push(currentLayer);
+  
+
+
+    let temp = [];
+
+    // actually pushes the data down
+
+    for(let ind = 0; ind < layers; ind++){
+      for(let i of itemLayers[ind + 1]){
+        let y1 = gethighestY(i.x, borders);
+        let y2 = gethighestY(i.x + i.width, borders);
+        if(y1 > y2){
+
+          nodes[i.index].y = y1;
+          temp.push({
+            low: i.x,
+            high: i.width + i.x + gap,
+            output: y1 + i.height + gap
+          })
+
+        } else {
+
+          nodes[i.index].y = y2;
+          temp.push({
+            low: i.x,
+            high: i.width + i.x + gap,
+            output: y2 + i.height + gap
+          })
+
+        }
+        updateDif(nodes[i.index], "update");
+        await(sleep(time));
+      }
+      for(let i of temp){
+        borders.push(i);
+      }
+      temp = [];
+    }
+
+
+  }
+
 </script>
 
 <a id='linkManager' class='invis'>Link Manager</a>
@@ -272,6 +440,7 @@
         transition:scale={{ duration: 250 }}
         onmousedown={() => focusNode(i)}
         ontouchstart={(e) => focusNode(i)}
+        bind:this={n.handle}
       >
 
 
@@ -416,12 +585,8 @@
 
     <div class="spacer"></div>
 
-    <button onclick={loadLocal}>
+    <button onclick={sort}>
       <LayoutGrid size={24}/>
-    </button>
-
-    <button onclick={deleteAllLocal}>
-      <Settings2 size={24}/>
     </button>
 
   </div>
@@ -663,12 +828,6 @@
     min-height: 10000px;
     position: relative;
     box-sizing: border-box;
-
-    background:
-      linear-gradient(90deg, var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-      linear-gradient(var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-      var(--text-color)
-    ;
   }
 
   .node {

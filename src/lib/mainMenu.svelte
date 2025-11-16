@@ -1,9 +1,11 @@
 <script>
-    import { loadBoards, loadLocal, loadSever, makeLocalBoard } from "../backend.svelte";
+    import { loadBoards, deleteBoard, makeLocalBoard, makeServerBoard, deleteAllLocal } from "../backend.svelte";
     import { onMount } from "svelte";
     import { appState } from "../global.svelte";
-    import { Cloud, Laptop, PlusCircle} from "@lucide/svelte";
+    import { Cloud, Laptop, LucideArrowLeft, PlusCircle, Settings2, Trash} from "@lucide/svelte";
     import { replace } from 'svelte-spa-router';
+    import { fade, fly, scale, slide } from "svelte/transition";
+    import { flip } from "svelte/animate";
 
 
 
@@ -21,9 +23,25 @@
         replace('/notes');
     }
 
-    const makeBoard = async () => {
-        await makeLocalBoard(searchTerm);
+    let creating = $state(false);
+
+    const makeBoard = async (isServer) => {
+        if(!isServer){
+            await makeLocalBoard(searchTerm);
+        } else {
+            await makeServerBoard(searchTerm);
+        }
         await toBoard(appState.boards[appState.boards.length - 1]);
+    }
+
+    let deleteHandler = $state(null);
+
+    const handleClick = (e, b, i) => {
+        if(e.button == 0){
+            toBoard(b);
+        } else if (e.button == 2){
+            deleteHandler = b;
+        }
     }
 
 </script>
@@ -39,36 +57,103 @@
             <input type="text" bind:value={searchTerm} placeholder="Search or create new board...">
         </div>  
 
+        <div class="boards">
 
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        {#if searchTerm.length != 0}
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div class="button" onclick={makeBoard}>
-                <PlusCircle size={18} />
-                <p>Create "{searchTerm}"</p>
-            </div>
-        {/if}
+            {#each searchBoards as b, i (b.id)}
 
-
-        {#each searchBoards as b}
-
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <div class="board" onclick={() => toBoard(b)}>
-                <div class="headerRow">
-                    <p>{b.boardName}</p>
-                    {#if b.boardType == "local"}
-                        <Laptop size={18} />
-                    {:else}
-                        <Cloud size={18} />
-                    {/if}
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div class="board" 
+                    onmousedown={(e) => handleClick(e, b, i)}
+                    transition:fly={{ duration: 250, x: -40}}
+                    animate:flip={{ duration: 250 }}
+                >
+                    <div class="headerRow">
+                        <p>{b.boardName}</p>
+                        {#if b.boardType == "local"}
+                            <Laptop size={18} />
+                        {:else}
+                            <Cloud size={18} />
+                        {/if}
+                    </div>
                 </div>
+            {/each}
+
+            {#if searchTerm != ""}
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <div class="button" 
+                    onclick={() => {creating = true}}
+                    transition:fly={{ duration: 250, x: -40}}  
+                >
+                    <PlusCircle size={18} />
+                    <p>Create "{searchTerm}"</p>
+                </div>
+            {/if}
+
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <div class="button" 
+                onclick={deleteAllLocal}
+                transition:fly={{ duration: 250, x: -40}}  
+            >
+                <Settings2 size={18} />
+                <p>Settings</p>
             </div>
-        {/each}
-
-
-
+        </div>
     </div>
+
+    {#if deleteHandler != null}
+        <div class="blocker"
+            transition:fade={{ duration: 250 }}
+        >
+
+        <div class="unsavedAlert"
+            transition:fly={{ x: 50, duration: 250 }}
+        >
+            <p>Delete Board?</p>
+            <div class="buttons">
+            <button onclick={() => {deleteHandler = null}}>
+                <LucideArrowLeft size={20} />
+                Back
+            </button>
+            <button onclick={() => {deleteBoard(deleteHandler); deleteHandler = null}} style='background-color: var(--fail-color) !important;'>
+                <Trash size={20} />
+                Delete
+            </button>
+            </div>
+        </div>
+
+        </div>
+
+    {/if}
+
+    {#if creating}
+        <div class="blocker"
+            transition:fade={{ duration: 250 }}
+        >
+
+        <div class="unsavedAlert"
+            transition:fly={{ x: 50, duration: 250 }}
+        >
+            <p>Local Or Server</p>
+            <div class="buttons">
+            <button onclick={() => makeBoard(false)}>
+                <Laptop size={20} />
+                Local
+            </button>
+            <button onclick={() => makeBoard(true)}>
+                <Cloud size={20} />
+                Server
+            </button>
+            </div>
+        </div>
+
+        </div>
+
+    {/if}
+
+
 </div>
 
 <style>
@@ -87,6 +172,13 @@
         align-items: center;
         gap: 7px;
         cursor: pointer;
+    }
+
+    .boards {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
     .searchBar {
@@ -110,7 +202,7 @@
         display: flex;
         flex-direction: row;
         box-sizing: border-box;
-        font-size: 18px;
+        font-size: 16px;
         outline: none !important;
         width: 100%;
     }
@@ -125,7 +217,7 @@
 
     .board {
         cursor: pointer;
-        width: 100%;
+        width: fit-content;
         display: flex;
         flex-direction: column;
         padding: 10px;
@@ -190,26 +282,79 @@
         padding: 50px;
         gap: 10px;
         flex-direction: column;
-        overflow: hidden;
-
-        background:
-            linear-gradient(90deg, var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-            linear-gradient(var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-            var(--text-color)
-        ;
-
     }
 
     @media (max-width: 700px){
         .searchBar input {
-            font-size: 16px;
+            font-size: 14px;
         }
     }
 
     @media (max-width: 500px){
         .searchBar input {
-            font-size: 14px;
+            font-size: 12px;
         }
     }
+
+    .blocker {
+        width: 100vw;
+        height: 100vh;
+        background-color: #00000040;
+        backdrop-filter: blur(5px);
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .unsavedAlert {
+        width: fit-content;
+        height: fit-content;
+        padding: 20px;
+        background-color: var(--light-bg-color);
+        box-sizing: border-box;
+        border-radius: 5px;
+        flex-direction: column;
+        gap: 10px;
+        display: flex;
+        color: var(--header-color);
+    }
+
+    .buttons {
+        display: flex;
+        box-sizing: border-box;
+        gap: 10px;
+        flex-direction: row;
+    }
+
+    .buttons button {
+        width: 100%;
+        background-color: var(--lighter-bg-color);
+        border: none;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        gap: 7px;
+        border-radius: 5px;
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color .25s ease;
+        color: var(--text-color);
+    }
+
+    .buttons button:hover {
+        background-color: var(--lightest-bg-color);
+    }
+
+
+    .unsavedAlert p {
+        margin: 0px;
+        font-size: 18px;
+    }
+
 
 </style>

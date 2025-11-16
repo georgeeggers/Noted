@@ -1,6 +1,14 @@
 <script>
   import Router, { location } from "svelte-spa-router";
     import { routes } from "./routes.svelte";
+    import { onMount } from "svelte";
+
+  onMount(() => {
+    document.addEventListener('contextmenu', (event) => { 
+      event.preventDefault(); 
+    });
+  })
+
 </script>
 
 <div class="globalContainer">
