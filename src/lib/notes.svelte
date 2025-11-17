@@ -69,10 +69,7 @@
     nodes[selected].y = e.pageY + offsetY;
   }
 
-  let dragLogicMobile = (e) => {
-    nodes[selected].x = e.changedTouches[0].pageX + offsetX;
-    nodes[selected].y = e.changedTouches[0].pageY + offsetY;
-  }
+
 
   const moveLogic = (e) => {
     if(moveDrag){
@@ -141,24 +138,6 @@
 
   const endDragDesktop = (e, n) => {
     document.removeEventListener('mousemove', dragLogicDesktop);
-    if(n.x < 0) {
-      n.x = 0;
-    }
-    if(n.y < 0) {
-      n.y = 0;
-    }
-
-    updateDif(n, "update");
-  }
-
-  const startDragMobile = (e, n) => {
-    offsetX = n.x - e.touches[0].pageX;
-    offsetY = n.y -  e.touches[0].pageY;
-    document.addEventListener('touchmove', dragLogicMobile)
-  }
-
-  const endDragMobile = (e, n) => {
-    document.removeEventListener('mousemove', dragLogicMobile);
     if(n.x < 0) {
       n.x = 0;
     }
@@ -277,8 +256,6 @@
   let sortList = $state([])
 
   const sort = async () => {
-
-    console.log("Sorting")
 
     let maxY = 0;
     let totalWidth = 0;
@@ -547,13 +524,11 @@
             </button>
           {/if}
 
-          <button class='controlButton' 
+          <button class='controlButton' draggable="false" 
             onmousedown={(e) => startDragDesktop(e, n)}
             onmouseup={(e) => endDragDesktop(e, n)}
-            ontouchstart={(e) => startDragMobile(e, n)}
-            ontouchend={(e) => endDragMobile(e, n)}
           >
-            <GripHorizontal size={20} />
+            <GripHorizontal size={20} ondragstart={(e) => e.preventDefault()} />
           </button>
 
 
@@ -656,7 +631,7 @@
     padding: 20px;
     background-color: var(--light-bg-color);
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     flex-direction: column;
     gap: 10px;
     display: flex;
@@ -679,7 +654,7 @@
     align-items: center;
     display: flex;
     gap: 7px;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     padding: 10px;
     cursor: pointer;
     transition: background-color .25s ease;
@@ -718,7 +693,7 @@
 
 
   .thumbnailImage {
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     width: 100%;
   }
 

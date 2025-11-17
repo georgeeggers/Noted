@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tauri",
+  "productName": "Noted",
   "version": "0.1.0",
-  "identifier": "com.georg.tauri",
+  "identifier": "com.georg.noted",
   "build": {
     "beforeDevCommand": "npm run dev -- -- --host",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tauri",
+        "title": "Noted",
         "width": 800,
         "height": 600
       }

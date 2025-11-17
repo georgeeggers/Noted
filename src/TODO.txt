@@ -24,7 +24,7 @@ Save to fs on desktop
 
 [ ] Explore postgres instead of SQLite for backend driver
 [ ] Brand app (logo and whatnot)
-[ ] Ctrl R to sort notes
+[X] Ctrl R to sort notes
 
 
 Bugs

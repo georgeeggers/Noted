@@ -161,7 +161,7 @@
         background-color: var(--lighter-bg-color);
         transition: background-color .25s ease;
         border: none;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         box-sizing: border-box;
         color: var(--header-color);
         font-size: 16px;
@@ -183,7 +183,7 @@
     .searchBar {
         background-color: var(--lighter-bg-color);
         border: none;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         box-sizing: border-box;
         color: var(--header-color);
         font-size: 16px;
@@ -220,7 +220,7 @@
         display: flex;
         flex-direction: column;
         padding: 10px;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         background-color: var(--light-bg-color);
         box-sizing: border-box;
         transition: background-color .25s ease;
@@ -315,7 +315,7 @@
         padding: 20px;
         background-color: var(--light-bg-color);
         box-sizing: border-box;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         flex-direction: column;
         gap: 10px;
         display: flex;
@@ -338,7 +338,7 @@
         align-items: center;
         display: flex;
         gap: 7px;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         padding: 10px;
         cursor: pointer;
         transition: background-color .25s ease;
