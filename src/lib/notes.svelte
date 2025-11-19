@@ -697,37 +697,6 @@
     width: 100%;
   }
 
-
-  .nodeSelector button, .headerBar button {
-    border: none;
-    box-sizing: border-box;
-    padding: 0px;
-    background: none;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    cursor: pointer;
-    color: var(--header-color);
-    transition: color .25s ease;
-  }
-
-  .nodeSelector button:hover, .headerBar button:hover {
-    color: var(--main-color);
-  }
-
-
-  .spacer {
-    border-left: 1px solid var(--header-color);
-    opacity: 0.5;
-    height: 100%;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .nodeSelector .spacer {
-    height: 20px;
-  }
-
   .headerBar {
     width: fit-content;
     box-sizing: border-box;
@@ -757,6 +726,36 @@
   .headerBar p {
     font-size: 16px;
     margin: 0px;
+  }
+
+  .nodeSelector button, .headerBar button {
+    border: none;
+    box-sizing: border-box;
+    padding: 0px;
+    background: none;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    cursor: pointer;
+    color: var(--header-color);
+    transition: color .25s ease;
+  }
+
+  .nodeSelector button:hover, .headerBar button:hover {
+    color: var(--main-color);
+  }
+
+
+  .spacer {
+    border-left: 1px solid var(--header-color);
+    opacity: 0.5;
+    height: 100%;
+    display: flex;
+    box-sizing: border-box;
+  }
+
+  .nodeSelector .spacer {
+    height: 20px;
   }
 
   .nodeSelector {

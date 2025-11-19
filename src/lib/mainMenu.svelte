@@ -93,7 +93,7 @@
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div class="button" 
-                onclick={deleteAllLocal}
+                onclick={() => replace("/settings")}
                 transition:fly={{ duration: 250, x: -40}}  
             >
                 <Settings2 size={18} />

@@ -53,7 +53,7 @@
 }
 
 * {
-  font-family: Arial, Helvetica, sans-serif !important;
+  font-family: monospace !important;
 }
 
 :root::-webkit-scrollbar {
