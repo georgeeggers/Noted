@@ -412,7 +412,7 @@
       <div class="node" style='
         left: {n.x}px; 
         top: {n.y}px; 
-        {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2;": ""} 
+        {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2; border: 1px solid var(--lightest-bg-color);": ""} 
         max-width: {n.type == "image" ? settings.imageWidth : (n.type == "note" ? settings.noteWidth : "1000000")}px;'
         transition:scale={{ duration: 250 }}
         onmousedown={() => focusNode(i)}
@@ -424,7 +424,7 @@
         {#if n.editing}
           <Textarea placeholder="Title" bind:value={n.title} fontSize={32} padding={0} style="font-weight: bold; color: var(--header-color);"/>
         {:else}
-          <p class='title' style='font-size: 32px;'>{n.title}</p>
+          <p class='title' style='font-size: calc(32px + var(--font-size-modifier));'>{n.title}</p>
         {/if}
 
         {#if n.type == 'note'}
@@ -582,9 +582,12 @@
     {/if}
   </div>
 
+  <button class='invis' id='closePopup' onclick={() => {alertUnsaved = false;}}>Close Popup</button>
+
   {#if alertUnsaved}
-    <div class="blocker"
+    <label class="blocker"
       transition:fade={{ duration: 250 }}
+      for="closePopup"
     >
 
       <div class="unsavedAlert"
@@ -592,18 +595,18 @@
       >
         <p>You have unsaved changes</p>
         <div class="buttons">
-          <button onclick={saveAndCont}>
+          <button onclick={saveAndCont} style='width: fit-content;'>
             <CheckCircle size={20} />
             Save
           </button>
-          <button onclick={quitNoSave} style='background-color: var(--fail-color) !important;'>
+          <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;'>
             <CircleX size={20} />
-            Quit
+            Discard
           </button>
         </div>
       </div>
 
-    </div>
+    </label>
 
   {/if}
 
@@ -625,19 +628,6 @@
     align-items: center;
   }
 
-  .unsavedAlert {
-    width: fit-content;
-    height: fit-content;
-    padding: 20px;
-    background-color: var(--light-bg-color);
-    box-sizing: border-box;
-    border-radius: var(--border-radius);
-    flex-direction: column;
-    gap: 10px;
-    display: flex;
-    color: var(--header-color);
-  }
-
   .buttons {
     display: flex;
     box-sizing: border-box;
@@ -648,7 +638,6 @@
   .buttons button {
     width: 100%;
     background-color: var(--lighter-bg-color);
-    border: none;
     box-sizing: border-box;
     justify-content: center;
     align-items: center;
@@ -659,19 +648,13 @@
     cursor: pointer;
     transition: background-color .25s ease;
     color: var(--text-color);
-    font-size: 14px;
+    font-size: calc(14px + var(--font-size-modifier));
+    border: 1px solid var(--lightest-bg-color);
   }
 
   .buttons button:hover {
     background-color: var(--lightest-bg-color);
   }
-
-
-  .unsavedAlert p {
-    margin: 0px;
-    font-size: 16px;
-  }
-
 
   .thumbnailImage.hover:hover {
     scale: 1.01;
@@ -695,6 +678,7 @@
   .thumbnailImage {
     border-radius: var(--border-radius);
     width: 100%;
+    margin-top: 10px;
   }
 
   .headerBar {
@@ -724,7 +708,8 @@
   }
 
   .headerBar p {
-    font-size: 16px;
+    font-size: calc(16px + var(--font-size-modifier));
+    color: var(--header-color);
     margin: 0px;
   }
 
@@ -792,7 +777,7 @@
   }
 
   .title {
-    font-size: 32px;
+    font-size: calc(32px + var(--font-size-modifier));
     font-weight: bold;
     color: var(--header-color);
     margin: 0px;
@@ -826,12 +811,14 @@
     ;
     backdrop-filter: blur(var(--blur-radius));
     min-width: 100px;
+    border: 1px solid var(--lighter-bg-color);
   }
 
   .node p {
     margin: 0px;
-    font-size: 20px;
+    font-size: calc(20px + var(--font-size-modifier));
     white-space: pre-wrap;
+    color: var(--text-color);
   }
 
   .controlBar {

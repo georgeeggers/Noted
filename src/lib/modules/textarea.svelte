@@ -41,7 +41,7 @@
     <!-- svelte-ignore a11y_interactive_supports_focus -->
     <div
         contenteditable="true"
-        style="font-size: {fontSize}px; padding: {padding}px;"
+        style="font-size: calc({fontSize}px + var(--font-size-modifier)); padding: {padding}px;"
         role="textbox"
         bind:innerText={value}
         data-placeholder="{placeholder}"
@@ -73,6 +73,7 @@
         min-width: 1px;
         min-height: 1px;
         transform: none;
+        color: var(--text-color);
     }
 
     .p:empty:before {

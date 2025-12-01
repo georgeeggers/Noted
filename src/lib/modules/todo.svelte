@@ -127,8 +127,9 @@
 
     p {
         margin: 0px;
-        font-size: 20px;
+        font-size: calc(20px + var(--font-size-modifier));
         white-space: pre-wrap;
+        color: var(--text-color);
     }
 
     .controlButton {

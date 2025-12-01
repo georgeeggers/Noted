@@ -4,7 +4,7 @@
     import { appState } from "../global.svelte";
     import { Cloud, Laptop, LucideArrowLeft, PlusCircle, Settings2, Trash} from "@lucide/svelte";
     import { replace } from 'svelte-spa-router';
-    import { fade, fly, scale, slide } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
     import { flip } from "svelte/animate";
 
     onMount(async () => {
@@ -102,9 +102,12 @@
         </div>
     </div>
 
+    <button class='invis' id='closeDelete' onclick={() => {deleteHandler = null}}>Close Popup</button>
+
     {#if deleteHandler != null}
-        <div class="blocker"
+        <label class="blocker"
             transition:fade={{ duration: 250 }}
+            for='closeDelete'
         >
 
         <div class="unsavedAlert"
@@ -116,39 +119,42 @@
                 <LucideArrowLeft size={20} />
                 Back
             </button>
-            <button onclick={() => {deleteBoard(deleteHandler); deleteHandler = null}} style='background-color: var(--fail-color) !important;'>
+            <button onclick={() => {deleteBoard(deleteHandler); deleteHandler = null}} style='background-color: var(--fail-color) !important; border: none !important;'>
                 <Trash size={20} />
                 Delete
             </button>
             </div>
         </div>
 
-        </div>
+        </label>
 
     {/if}
 
+    <button class='invis' id='closeCreate' onclick={() => {creating = false}}>Close Popup</button>
+
     {#if creating}
-        <div class="blocker"
+        <label class="blocker"
             transition:fade={{ duration: 250 }}
+            for='closeCreate'
         >
 
-        <div class="unsavedAlert"
-            transition:fly={{ x: 50, duration: 250 }}
-        >
-            <p>Local Or Server</p>
-            <div class="buttons">
-            <button onclick={() => makeBoard(false)}>
-                <Laptop size={20} />
-                Local
-            </button>
-            <button onclick={() => makeBoard(true)}>
-                <Cloud size={20} />
-                Server
-            </button>
+            <div class="unsavedAlert"
+                transition:fly={{ x: 50, duration: 250 }}
+            >
+                <p>Local Or Server</p>
+                <div class="buttons">
+                    <button onclick={() => makeBoard(false)}>
+                        <Laptop size={20} />
+                        Local
+                    </button>
+                    <button onclick={() => makeBoard(true)}>
+                        <Cloud size={20} />
+                        Server
+                    </button>
+                </div>
             </div>
-        </div>
 
-        </div>
+        </label>
 
     {/if}
 
@@ -164,13 +170,14 @@
         border-radius: var(--border-radius);
         box-sizing: border-box;
         color: var(--header-color);
-        font-size: 16px;
+        font-size: calc(16px + var(--font-size-modifier));
         padding: 10px;
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 7px;
         cursor: pointer;
+        border: 1px solid var(--lightest-bg-color);
     }
 
     .boards {
@@ -186,13 +193,14 @@
         border-radius: var(--border-radius);
         box-sizing: border-box;
         color: var(--header-color);
-        font-size: 16px;
+        font-size: calc(16px + var(--font-size-modifier));
         padding: 10px;
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 7px;
         cursor: pointer;
+        border: 1px solid var(--lightest-bg-color);
     }
 
     .searchBar input {
@@ -201,7 +209,7 @@
         display: flex;
         flex-direction: row;
         box-sizing: border-box;
-        font-size: 16px;
+        font-size: calc(16px + var(--font-size-modifier));
         outline: none !important;
         width: 100%;
     }
@@ -226,10 +234,11 @@
         transition: background-color .25s ease;
         gap: 10px;
         color: var(--text-color);
+        border: 1px solid var(--lighter-bg-color);
     }
 
     .headerRow p {
-        font-size: 18px;
+        font-size: calc(18px + var(--font-size-modifier));
     }
 
     .headerRow {
@@ -247,7 +256,7 @@
     .board p {
         color: var(--header-color);
         margin: 0px;
-        font-size: 16px;
+        font-size: calc(16px + var(--font-size-modifier));
     }
 
     .board:hover {
@@ -268,7 +277,8 @@
 
     .header {
         margin: 0px;
-        font-size: 40px;
+        font-size: calc(40px + var(--font-size-modifier));
+        color: var(--header-color);
     }
 
     .globalArea {
@@ -285,13 +295,13 @@
 
     @media (max-width: 700px){
         .searchBar input {
-            font-size: 14px;
+        font-size: calc(14px + var(--font-size-modifier));
         }
     }
 
     @media (max-width: 500px){
         .searchBar input {
-            font-size: 12px;
+            font-size: calc(12px + var(--font-size-modifier));
         }
     }
 
@@ -308,53 +318,5 @@
         justify-content: center;
         align-items: center;
     }
-
-    .unsavedAlert {
-        width: fit-content;
-        height: fit-content;
-        padding: 20px;
-        background-color: var(--light-bg-color);
-        box-sizing: border-box;
-        border-radius: var(--border-radius);
-        flex-direction: column;
-        gap: 10px;
-        display: flex;
-        color: var(--header-color);
-    }
-
-    .buttons {
-        display: flex;
-        box-sizing: border-box;
-        gap: 10px;
-        flex-direction: row;
-    }
-
-    .buttons button {
-        width: 100%;
-        background-color: var(--lighter-bg-color);
-        border: none;
-        box-sizing: border-box;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-        gap: 7px;
-        border-radius: var(--border-radius);
-        padding: 10px;
-        cursor: pointer;
-        transition: background-color .25s ease;
-        color: var(--text-color);
-        font-size: 14px;
-    }
-
-    .buttons button:hover {
-        background-color: var(--lightest-bg-color);
-    }
-
-
-    .unsavedAlert p {
-        margin: 0px;
-        font-size: 18px;
-    }
-
 
 </style>

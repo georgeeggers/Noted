@@ -42,7 +42,7 @@
 
 .header {
     margin: 0px;
-    font-size: 40px;
+    font-size: calc(40px + var(--font-size-modifier));
 }
 
 
@@ -73,24 +73,7 @@
 }
 
 .headerBar p {
-    font-size: 16px;
+    font-size: calc(16px + var(--font-size-modifier));
     margin: 0px;
-}
-
-.headerBar button {
-    border: none;
-    box-sizing: border-box;
-    padding: 0px;
-    background: none;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    cursor: pointer;
-    color: var(--header-color);
-    transition: color .25s ease;
-}
-
-.headerBar button:hover {
-    color: var(--main-color);
 }
 </style>
