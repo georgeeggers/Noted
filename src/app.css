@@ -5,19 +5,18 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
 
---header-color: #e1e6f8ff;
---text-color: #cdd6f4;
---main-color: #60995aff;
---light-main-color: #7cca76ff;
---dim-main-color: #53884eff;
---gray-color: #313244;
---input-color: #39395780;
---bg-color: #1e1e2e;
---light-bg-color: #242436ff;
---lighter-bg-color: #2e2e46ff;
---lightest-bg-color: #393957ff;
---fail-color: #df6174ff;
-
+  --header-color: #f8f8f8;
+  --text-color: #c9c9c9;
+  --main-color: #018d6cff;
+  --light-main-color: #00ad85ff;
+  --dim-main-color: #006e55ff;
+  --gray-color: #2f2f2f;
+  --input-color: #2e2e2e80;
+  --bg-color: #0f0f0f;
+  --light-bg-color: #181818;
+  --lighter-bg-color: #232323;
+  --lightest-bg-color: #2e2e2e;
+  --fail-color: #a52100;
 
 
   background-color: var(--bg-color);
@@ -35,6 +34,8 @@
   --font-size-modifier: 0px;
   --border-radius: 10px;
 
+  --font: monospace;
+
   transition: background 250ms ease;
 
 
@@ -46,12 +47,16 @@
 
 }
 
+p {
+  margin: 0px;
+}
+
 .svg {
   -webkit-user-drag: none;
 }
 
 * {
-  font-family: monospace !important;
+  font-family: var(--font) !important;
 }
 
 :root::-webkit-scrollbar {
@@ -114,4 +119,17 @@ html, body, #root {
 
 .buttons button:hover {
   background-color: var(--lightest-bg-color);
+}
+
+
+.content {
+    height: fit-content;
+    min-height: 100px;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    padding: 20px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
 }

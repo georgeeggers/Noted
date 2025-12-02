@@ -263,18 +263,6 @@
         background-color: var(--lighter-bg-color);
     }
 
-    .content {
-        height: fit-content;
-        min-height: 100px;
-        width: 100%;
-        max-width: 600px;
-        box-sizing: border-box;
-        padding: 20px;
-        gap: 10px;
-        display: flex;
-        flex-direction: column;
-    }
-
     .header {
         margin: 0px;
         font-size: calc(40px + var(--font-size-modifier));

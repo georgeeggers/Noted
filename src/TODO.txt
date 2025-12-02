@@ -7,7 +7,7 @@ Add Different Node Types
  |  | [X] Image
  |  | [X] Regular Files
  |  | [-] Music Player
-[ ] Font Picker
+[X] Font Picker
 [ ] Option to connect to pb
 [X] Figure out node chooser UI
 [ ] Add a server utility
@@ -24,7 +24,9 @@ Save to fs on desktop
 [-] Explore postgres instead of SQLite for backend driver
 [ ] Brand app (logo and whatnot)
 [X] Ctrl R to sort notes
-
+[ ] Some function to zoom
+[ ] Custom Titlebar
+[ ] Settings
 
 Bugs
 

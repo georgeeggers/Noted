@@ -5,7 +5,7 @@
   import { fade, fly, scale } from 'svelte/transition';
 
   import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX } from '@lucide/svelte';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
     import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
     import Todo from './modules/todo.svelte';
     import { replace } from 'svelte-spa-router';
@@ -113,17 +113,17 @@
         await loadLocal(appState.selectedBoard.id);
       }
 
-
-      document.removeEventListener('mousedown', globalMouseDown);
-      document.removeEventListener('mouseup', globalMouseUp)
-      document.removeEventListener('keydown', keydownLogic);
-
-
       document.addEventListener('keydown', keydownLogic)
       document.addEventListener('mousedown', globalMouseDown);
       document.addEventListener('mouseup', globalMouseUp)
 
     }
+  })
+
+  onDestroy(() => {
+      document.removeEventListener('mousedown', globalMouseDown);
+      document.removeEventListener('mouseup', globalMouseUp);
+      document.removeEventListener('keydown', keydownLogic);
   })
 
   const focusNode = (index) => {
@@ -139,10 +139,10 @@
   const endDragDesktop = (e, n) => {
     document.removeEventListener('mousemove', dragLogicDesktop);
     if(n.x < 0) {
-      n.x = 0;
+      n.x = settings.gap;
     }
     if(n.y < 0) {
-      n.y = 0;
+      n.y = settings.gap;
     }
 
     updateDif(n, "update");
@@ -304,7 +304,7 @@
 
     let idealWidth = (totalWidth / (Math.ceil(Math.sqrt(sortList.length)))) * 1.5;
     let eclipsedWidth = 0;
-    const gap = 10;
+    const gap = settings.gap;
     let nextX = gap;
     let nextY = gap;
     let count = 0;
@@ -593,7 +593,7 @@
       <div class="unsavedAlert"
         transition:fly={{ x: 50, duration: 250 }}
       >
-        <p>You have unsaved changes</p>
+        <p>You have unsaved changes!</p>
         <div class="buttons">
           <button onclick={saveAndCont} style='width: fit-content;'>
             <CheckCircle size={20} />
@@ -701,6 +701,7 @@
     transition: background-color .25s ease;
     backdrop-filter: blur(5px);
     cursor: pointer;
+    border: 1px solid var(--lightest-bg-color);
   }
 
   .headerBar:hover {
@@ -724,6 +725,9 @@
     cursor: pointer;
     color: var(--header-color);
     transition: color .25s ease;
+  }
+  .nodeSelector {
+    border: 1px solid var(--lightest-bg-color);
   }
 
   .nodeSelector button:hover, .headerBar button:hover {

@@ -3,11 +3,11 @@ import { ChevronDown } from '@lucide/svelte';
     import { fly } from 'svelte/transition';
 
 let expanded = $state(false);
-let { options, stickLeft, display } = $props();
+let { options, stickLeft, display = $bindable() } = $props();
 
 const click = (a) => {
   expanded = true;
-  a.action();
+  a.action(a.args);
 }
 
 
@@ -26,14 +26,16 @@ const click = (a) => {
 
     {#if expanded} 
       
-      <div class="content" style="{stickLeft ? "left" : "right"}: 0px;"
+      <div class="dropdownContent" style="{stickLeft ? "left" : "right"}: 0px;"
         transition:fly={{ x: 50, duration: 250}}
       >
         {#each options as a}
             <div class="choice"
               onclick={() => click(a)}
             >
-                <p>{a.display}</p>
+              <div class="option">
+                  <p>{a.display}</p>
+              </div>
             </div>
         {/each}
       </div>
@@ -50,13 +52,26 @@ const click = (a) => {
   p {
     font-size: calc(16px + var(--font-size-modifier));
     margin: 0px;
+    color: var(--text-color);
+  }
+
+  .option {
+    transition: background-color .25s ease;
+    padding: 3px;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--text-color);
+  }
+
+  .option:hover {
+    background-color: var(--lightest-bg-color);
   }
 
   .choice {
     cursor: pointer;
     box-sizing: border-box;
-    padding-left: 10px;
-    padding-right: 10px;
   }
 
   .choice p {
@@ -64,12 +79,11 @@ const click = (a) => {
     color: var(--text-color);
   }
 
-  .choice:hover p {
-    color: var(--main-color);
-  }
+
 
   .dropDown {
     width: fit-content;
+    height: fit-content;
     padding: 10px;
     background-color: var(--lighter-bg-color);
     border-radius: var(--border-radius);
@@ -82,26 +96,32 @@ const click = (a) => {
     position: relative;
     border: 1px solid var(--lightest-bg-color);
     box-sizing: border-box;
+    transition: background-color .25s ease;
+    color: var(--text-color);
   }
 
+  .dropDown:hover {
+    background-color: var(--lightest-bg-color);
+  }
 
-  .content {
+  .dropdownContent {
     position: absolute;
     top: calc(100% - 10px);
-    background-color: #00000040;
-    backdrop-filter: blur(10px);
+    background-color: var(--bg-color);
+    backdrop-filter: saturate(90%) blur(5px);
     box-sizing: border-box;
-    padding: 10px;
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding: 5px;
     z-index: 100;
+    width: fit-content;
+    border: 1px solid var(--lightest-bg-color);
+
   }
 
-  .content p {
+  .dropdownContent p {
     text-wrap: nowrap;
   }
 
