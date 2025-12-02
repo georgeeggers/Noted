@@ -22,11 +22,11 @@ Save to fs on desktop
  |  | [X] Make board UI not look like crap
 
 [-] Explore postgres instead of SQLite for backend driver
-[ ] Brand app (logo and whatnot)
+[X] Brand app (logo and whatnot)
 [X] Ctrl R to sort notes
 [ ] Some function to zoom
 [ ] Custom Titlebar
-[ ] Settings
+[X] Settings
 
 Bugs
 

@@ -1,10 +1,13 @@
+import { load } from "@tauri-apps/plugin-store";
+
 export let settings = $state({
     noteWidth: 500,
     imageWidth: 500,
     gap: 10,
     fontSize: 'Normal',
     font: "Monospace",
-    border: "Rounded"
+    border: "Rounded",
+    themeIndex: 0
 })
 
 const encoder = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+\`~,./<>?;\':\"[]{}\\|";
@@ -149,7 +152,6 @@ export let color = $state(
         lighterBgColor: "#232323",
         lightestBgColor: "#2e2e2e",
         fail: "#a52100",
-        index: 0
     }
 )
 
@@ -340,7 +342,31 @@ export const loadTheme = (theme, index) => {
     color.lightestBgColor = theme.lightestBgColor,
     color.fail = theme.fail;
 
-    color.index = index;
+    settings.themeIndex = index;
 
 };
 
+export const saveSettings = async () => {
+    const store = await load('store.json', {
+        autoSave: false,
+        defaults: {}
+    });
+    console.log(settings);
+    await store.set('settings', settings);
+    await store.save();
+}
+
+export const loadSettings = async () => {
+    const store = await load('store.json', {
+        autoSave: false,
+        defaults: {}
+    });
+
+    const result = await store.get('settings');
+    console.log(result);
+    for(let [key, val] of Object.entries(result)){
+        settings[key] = val;
+    }
+
+    await loadTheme(themes[settings.themeIndex], settings.themeIndex);
+}

@@ -2,7 +2,9 @@
   import Router from "svelte-spa-router";
   import { routes } from "./routes.svelte";
   import { onMount } from "svelte";
-  import { color, settings, translateFontSizes, translateRadius } from "./global.svelte";
+  import { color, loadSettings, saveSettings, settings, translateFontSizes, translateRadius } from "./global.svelte";
+
+  let init = $state(true);
 
   $effect(() => {
       const colorVars = {
@@ -25,16 +27,20 @@
       for (const [varName, value] of Object.entries(colorVars)) {
         document.documentElement.style.setProperty(varName, `${value}`);
       }
+      if(!init){
+        saveSettings();
+      }
   })
 
 
-  onMount(() => {
-
-
+  onMount(async () => {
     document.addEventListener('contextmenu', (event) => { 
       event.preventDefault(); 
     });
 
+    await loadSettings();
+
+    init = false;
 
   })
 

@@ -2,15 +2,17 @@
     import { replace } from "svelte-spa-router";
     import { ArrowLeft, Moon, Sun } from "@lucide/svelte";
     import DropdownAction from "./modules/dropdownAction.svelte";
-    import { color, loadTheme, settings, themes } from "../global.svelte";
+    import { color, loadTheme, saveSettings, settings, themes } from "../global.svelte";
     import DropdownSelector from "./modules/dropdownSelector.svelte";
 
     let fonts = ['Monospace', "Arial", "Roboto"];
     let fontSizes = ["Smaller", "Small", "Normal", "Big", "Bigger"];
     let borders = ["Square", "Squarcle", "Rounded", "Roundest"];
-    let gaps = [0, 10, 20, 50];
+    let gaps = [0, 5, 10, 20];
 
-
+    const save = async (a) => {
+        await saveSettings();
+    }
 
 </script>
 
@@ -39,7 +41,7 @@
                     <p class='settingName'>Font</p>
                     <p>Selects the font used in the app</p>
                 </div>
-                <DropdownSelector stickLeft={false} options={fonts} bind:selected={settings.font}/>
+                <DropdownSelector stickLeft={false} options={fonts} bind:selected={settings.font} callbackFunc={save}/>
             </div>
 
             <div class="subSetting">
@@ -47,7 +49,7 @@
                     <p class='settingName'>Font Size</p>
                     <p>Controls the size of the text across the app</p>
                 </div>
-                <DropdownSelector stickLeft={false} options={fontSizes} bind:selected={settings.fontSize}/>
+                <DropdownSelector stickLeft={false} options={fontSizes} bind:selected={settings.fontSize} callbackFunc={save}/>
 
             </div>
 
@@ -63,7 +65,7 @@
                     <p class='settingName'>Borders</p>
                     <p>Decides the radius of borders</p>
                 </div>
-                <DropdownSelector stickLeft={false} options={borders} bind:selected={settings.border}/>
+                <DropdownSelector stickLeft={false} options={borders} bind:selected={settings.border} callbackFunc={save}/>
             </div>
 
             <div class="subSetting">
@@ -71,7 +73,7 @@
                     <p class='settingName'>Gap</p>
                     <p>Controls the gap size between notes when sorting</p>
                 </div>
-                <DropdownSelector stickLeft={false} options={gaps} bind:selected={settings.gap} displayFunc={(a) => {return `${a}px`}}/>
+                <DropdownSelector stickLeft={false} options={gaps} bind:selected={settings.gap} displayFunc={(a) => {return `${a}px`}} callbackFunc={save}/>
             </div>
 
         </div>
@@ -83,7 +85,7 @@
                 <div class="themeContainer">
                     {#each themes as t, i}
                         <button class='invis' id='{t.name}' onclick={() => loadTheme(t, i)}>{t.name}</button>
-                        <label class='theme {color.index == i ? 'selected' : ""}' for="{t.name}">
+                        <label class='theme {settings.themeIndex == i ? 'selected' : ""}' for="{t.name}">
                             {#if t.type == "dark"}
                                 <Moon size=20 />
                             {:else}
@@ -104,6 +106,8 @@
 
 
 <style>
+
+
 
 .themeContainer {
     width: 100%;
@@ -204,6 +208,7 @@
     padding: 50px;
     gap: 10px;
     flex-direction: column;
+    padding-bottom: 1000px;
 }
 
 .header {

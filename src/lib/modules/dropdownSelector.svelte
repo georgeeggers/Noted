@@ -3,12 +3,13 @@ import { ChevronDown } from '@lucide/svelte';
     import { fly } from 'svelte/transition';
 
 let expanded = $state(false);
-let { selected = $bindable(), options, stickLeft, displayFunc = (a) => {return a} } = $props();
+let { selected = $bindable(), options, stickLeft, displayFunc = (a) => {return a}, callbackFunc = (a) => {} } = $props();
 
 
 const click = (a) => {
   expanded = true;
   selected = a;
+  callbackFunc(a);
 }
 
 
