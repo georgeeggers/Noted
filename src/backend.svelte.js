@@ -44,7 +44,6 @@ export const saveLocal = async (id) => {
                 'INSERT into data (id, boardID, x, y, type, title, content, file, editing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
                 [i.node.id, id, i.node.x, i.node.y, i.node.type, i.node.title, content, file, i.node.editing ? 1 : 0]
             );
-            console.log(result);
 
         } else if (i.action == 'update'){
             let file = await toBase64(i.node.file);

@@ -210,8 +210,14 @@
         flex-direction: row;
         box-sizing: border-box;
         font-size: calc(16px + var(--font-size-modifier));
+        color: var(--header-color);
         outline: none !important;
         width: 100%;
+    }
+
+    .searchBar::placeholder {
+        color: var(--header-color);
+        opacity: 0.5;
     }
 
     .button p {

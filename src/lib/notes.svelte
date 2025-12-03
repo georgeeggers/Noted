@@ -327,7 +327,7 @@
       if(layers == 0){
         borders.push({
           low: nextX,
-          high: i.width + nextX + gap,
+          high: i.width + nextX + gap - 1,
           output: nextY + i.height + gap
         });
       }
@@ -353,8 +353,6 @@
       await sleep(time);
     }
     itemLayers.push(currentLayer);
-  
-
 
     let temp = [];
 
@@ -365,27 +363,26 @@
         let y1 = gethighestY(i.x, borders);
         let y2 = gethighestY(i.x + i.width, borders);
         if(y1 > y2){
-
           nodes[i.index].y = y1;
           temp.push({
             low: i.x,
-            high: i.width + i.x + gap,
+            high: i.width + i.x + gap -1,
             output: y1 + i.height + gap
           })
 
         } else {
-
           nodes[i.index].y = y2;
           temp.push({
             low: i.x,
-            high: i.width + i.x + gap,
-            output: y2 + i.height + gap
+            high: i.width + i.x + gap -1,
+            output: y2+ i.height + gap
           })
 
         }
         updateDif(nodes[i.index], "update");
         await(sleep(time));
       }
+      borders.length = 0;
       for(let i of temp){
         borders.push(i);
       }

@@ -351,7 +351,6 @@ export const saveSettings = async () => {
         autoSave: false,
         defaults: {}
     });
-    console.log(settings);
     await store.set('settings', settings);
     await store.save();
 }
@@ -363,7 +362,6 @@ export const loadSettings = async () => {
     });
 
     const result = await store.get('settings');
-    console.log(result);
     for(let [key, val] of Object.entries(result)){
         settings[key] = val;
     }

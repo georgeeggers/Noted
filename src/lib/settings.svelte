@@ -8,7 +8,7 @@
     let fonts = ['Monospace', "Arial", "Roboto"];
     let fontSizes = ["Smaller", "Small", "Normal", "Big", "Bigger"];
     let borders = ["Square", "Squarcle", "Rounded", "Roundest"];
-    let gaps = [0, 5, 10, 20];
+    let gaps = [0, 5, 10, 20, 50];
 
     const save = async (a) => {
         await saveSettings();
@@ -214,6 +214,7 @@
 .header {
     margin: 0px;
     font-size: calc(40px + var(--font-size-modifier));
+    color: var(--header-color);
 }
 
 
