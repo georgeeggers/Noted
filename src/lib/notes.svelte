@@ -1,10 +1,10 @@
 <script>
   // this is a custom textarea like solution for lack of support on webkit and gecko
   import Textarea from './modules/textarea.svelte';
-  import { appState, getID, settings, nodes, updateDif, difs } from '../global.svelte';
+  import { appState, getID, settings, nodes, updateDif, difs, createDebounce } from '../global.svelte';
   import { fade, fly, scale } from 'svelte/transition';
 
-  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX } from '@lucide/svelte';
+  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric } from '@lucide/svelte';
   import { onDestroy, onMount } from 'svelte';
     import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
     import Todo from './modules/todo.svelte';
@@ -12,6 +12,10 @@
 
   let selected = $state(-1);
 
+  const levels = [2, 1.5, 1.25, 1, .75, .5, .25];
+
+  let zoomIndex = $state(3);
+  const zoomLevel = $derived(levels[zoomIndex]);
 
   if(appState.selectedBoard == null){
     replace('/');
@@ -65,8 +69,9 @@
   let offsetY = $state(0);
 
   let dragLogicDesktop = (e) => {
-    nodes[selected].x = e.pageX + offsetX;
-    nodes[selected].y = e.pageY + offsetY;
+    console.log(e);
+    nodes[selected].x += e.movementX * zoomLevel;
+    nodes[selected].y += e.movementY * zoomLevel;
   }
 
 
@@ -93,6 +98,10 @@
     }
   }
 
+  let showZoom = $state(false);
+
+  const zoomDebouncer = createDebounce(() => {showZoom = false}, 3000);
+
   const keydownLogic = async (e) => {
     if(e.key === 's' && e.ctrlKey){
       appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)
@@ -100,6 +109,18 @@
       // replace refresh with sorting
       e.preventDefault();
       await sort();
+    } else if (e.key === "-" && e.ctrlKey){
+      showZoom = true;
+      zoomDebouncer();
+      if(zoomIndex != 0){
+        zoomIndex--;
+      }
+    } else if ((e.key === "=" || e.key === "+") && e.ctrlKey){
+      showZoom = true;
+      zoomDebouncer();
+      if(zoomIndex != levels.length - 1){
+        zoomIndex++;
+      }
     }
   }
 
@@ -396,7 +417,9 @@
 
 <a id='linkManager' class='invis'>Link Manager</a>
 
-<div class="globalArea">
+<div class="globalArea" style="
+  zoom: {1 / zoomLevel};
+">
 
   <div class="mainArea">
 
@@ -407,8 +430,7 @@
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div class="node" style='
-        left: {n.x}px; 
-        top: {n.y}px; 
+        transform: translate({n.x}px, {n.y}px);
         {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2; border: 1px solid var(--lightest-bg-color);": ""} 
         max-width: {n.type == "image" ? settings.imageWidth : (n.type == "note" ? settings.noteWidth : "1000000")}px;'
         transition:scale={{ duration: 250 }}
@@ -492,16 +514,7 @@
             <Todo bind:data={n.content} bind:editing={n.editing} depth={false} index={i} />
 
         {/if}
-
-
-
-
-
-
-
-
-
-
+        
         <span class="controlBar">
           <button class="controlButton" onclick={() => toggleEdit(n)} style="{n.editing ? "color: var(--light-main-color); !important" : ""}">
             <PencilLine size={20} />
@@ -536,78 +549,84 @@
   </div>
 
 
+</div>
 
+<div class="nodeSelector">
+  <button onclick={() => addNode("note")}>
+    <ScrollText size={24} />
+  </button>
 
-  <div class="nodeSelector">
-    <button onclick={() => addNode("note")}>
-      <ScrollText size={24} />
-    </button>
+  <button onclick={() => addNode("todo")}>
+    <ListTodo size={24} />
+  </button>
 
-    <button onclick={() => addNode("todo")}>
-      <ListTodo size={24} />
-    </button>
+  <button onclick={() => addNode("image")}>
+    <Image size={24} />
+  </button>
 
-    <button onclick={() => addNode("image")}>
-      <Image size={24} />
-    </button>
+  <button onclick={() => addNode("file")}>
+    <File size={24} />
+  </button>
 
-    <button onclick={() => addNode("file")}>
-      <File size={24} />
-    </button>
+  <div class="spacer"></div>
 
-    <div class="spacer"></div>
-
-    <button onclick={sort}>
-      <LayoutGrid size={24}/>
-    </button>
-
-  </div>
-
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="headerBar" onclick={goBack}>
-    <p>{appState.selectedBoard.boardName}</p>
-    {#if appState.selectedBoard.boardType == "local" }
-      <Laptop size={20} />
-    {:else}
-      <Cloud size={20} />
-    {/if}
-    {#if difs.length > 0}
-      <button onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
-        <CircleSmall size={20} />
-      </button>
-    {/if}
-  </div>
-
-  <button class='invis' id='closePopup' onclick={() => {alertUnsaved = false;}}>Close Popup</button>
-
-  {#if alertUnsaved}
-    <label class="blocker"
-      transition:fade={{ duration: 250 }}
-      for="closePopup"
-    >
-
-      <div class="unsavedAlert"
-        transition:fly={{ x: 50, duration: 250 }}
-      >
-        <p>You have unsaved changes!</p>
-        <div class="buttons">
-          <button onclick={saveAndCont} style='width: fit-content;'>
-            <CheckCircle size={20} />
-            Save
-          </button>
-          <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;'>
-            <CircleX size={20} />
-            Discard
-          </button>
-        </div>
-      </div>
-
-    </label>
-
-  {/if}
+  <button onclick={sort}>
+    <LayoutGrid size={24}/>
+  </button>
 
 </div>
+{#if showZoom}
+  <div class="zoomLevel"
+    transition:fly={{ x: 100, duration: 250 }}
+  >
+    <p>{Math.round((1 / zoomLevel) * 100) / 100}x</p>
+    <Search size=20 />
+  </div>
+{/if}
+
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="headerBar" onclick={goBack}>
+  <p>{appState.selectedBoard.boardName}</p>
+  {#if appState.selectedBoard.boardType == "local" }
+    <Laptop size={20} />
+  {:else}
+    <Cloud size={20} />
+  {/if}
+  {#if difs.length > 0}
+    <button onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
+      <CircleSmall size={20} />
+    </button>
+  {/if}
+</div>
+
+<button class='invis' id='closePopup' onclick={() => {alertUnsaved = false;}}>Close Popup</button>
+
+{#if alertUnsaved}
+  <label class="blocker"
+    transition:fade={{ duration: 250 }}
+    for="closePopup"
+  >
+
+    <div class="unsavedAlert"
+      transition:fly={{ x: 50, duration: 250 }}
+    >
+      <p>You have unsaved changes!</p>
+      <div class="buttons">
+        <button onclick={saveAndCont} style='width: fit-content;'>
+          <CheckCircle size={20} />
+          Save
+        </button>
+        <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;'>
+          <CircleX size={20} />
+          Discard
+        </button>
+      </div>
+    </div>
+
+  </label>
+
+{/if}
 
 <style>
 
@@ -678,11 +697,34 @@
     margin-top: 10px;
   }
 
+  .zoomLevel {
+    width: fit-content;
+    box-sizing: border-box;
+    background-color: var(--input-color);
+    height: 45px;
+    position: fixed;
+    z-index: 10;
+    top: 85px;
+    right: 20px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--border-radius);
+    gap: 10px;
+    color: var(--header-color);
+    transition: background-color .25s ease;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    border: 1px solid var(--lightest-bg-color);
+  }
+
   .headerBar {
     width: fit-content;
     box-sizing: border-box;
     background-color: var(--input-color);
-    height: fit-content;
+    height: 45px;
     position: fixed;
     z-index: 10;
     top: 20px;
@@ -705,7 +747,7 @@
     background-color: var(--lightest-bg-color);
   }
 
-  .headerBar p {
+  .headerBar p, .zoomLevel p {
     font-size: calc(16px + var(--font-size-modifier));
     color: var(--header-color);
     margin: 0px;
@@ -729,6 +771,17 @@
 
   .nodeSelector button:hover, .headerBar button:hover {
     color: var(--main-color);
+  }
+
+  @keyframes shake {
+    0% { transform: rotate(0deg); }
+    33% { transform: rotate(-5deg); }
+    66% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  .nodeSelector button:hover:not(.noAnim) {
+    animation: shake .5s;
   }
 
 
@@ -766,7 +819,6 @@
     gap: 20px;
     padding-left: 20px;
     padding-right: 20px;
-
     color: var(--header-color);
   }
 
@@ -789,6 +841,11 @@
     min-height: 10000px;
     position: relative;
     box-sizing: border-box;
+    background:
+      linear-gradient(90deg, var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+      linear-gradient(var(--bg-color) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+      var(--text-color)
+    ;
   }
 
   .node {
@@ -814,6 +871,7 @@
     min-width: 100px;
     border: 1px solid var(--lighter-bg-color);
   }
+
 
   .node p {
     margin: 0px;
@@ -861,6 +919,22 @@
     align-items: center;
     width: 100%;
     text-align: center;
+  }
+
+  @keyframes spin {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+  }
+
+  .spin:not(.noAnims) {
+    animation: spin 1.5s;
+    animation-iteration-count: infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
   }
 
 </style>

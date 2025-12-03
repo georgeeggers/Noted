@@ -368,3 +368,13 @@ export const loadSettings = async () => {
 
     await loadTheme(themes[settings.themeIndex], settings.themeIndex);
 }
+
+export const createDebounce = (action, delay) => {
+  let timer;
+  return (
+    () => {
+      clearTimeout(timer);
+      timer = setTimeout(action, delay);
+    }
+  )
+}
