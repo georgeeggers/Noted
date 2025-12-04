@@ -1,14 +1,19 @@
 <script>
-    import { settings } from "../../global.svelte";
+    import { saveSettings, settings } from "../../global.svelte";
 
 
-let { value = $bindable(), onClick = () => {value = !value; console.log("hi")} } = $props();
+let { value = $bindable(), onClick = () => {value = !value; }} = $props();
+
+let click = () => {
+    onClick();
+    saveSettings();
+}
 
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="main {settings.animations ? 'anim' : ""}" onclick={() => onClick()} style="{value ? "background-color: var(--dim-main-color);" : ""}">
+<div class="main {settings.animations ? 'anim' : ""}" onclick={click} style="{value ? "background-color: var(--dim-main-color);" : ""}">
     <div class="toggleDot {settings.animations ? 'anim' : ""}" style='left: {value ? "calc(100% - 25px);" : "5px;"}'></div>
 </div>
 
