@@ -3,7 +3,7 @@
     import Textarea from './textarea.svelte';
     let { data = $bindable(), editing = $bindable(), depth, index } = $props();
     import Self from './todo.svelte';
-    import { updateDif, updateDifByIndex } from '../../global.svelte';
+    import { settings, updateDif, updateDifByIndex } from '../../global.svelte';
 
     const addData = () => {
         data.push({
@@ -47,7 +47,7 @@
             {#if d.type == "single"}
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div class="todoBorder" onclick={() => toggleData(d)} style="{d.value ? "background-color: var(--main-color)" : ""}"></div>
+                <div class="todoBorder {settings.animations ? "anim" : ""}" onclick={() => toggleData(d)} style="{d.value ? "background-color: var(--main-color)" : ""}"></div>
             {/if}
 
             {#if editing}
@@ -55,12 +55,12 @@
                 <Textarea bind:value={d.content} placeholder={`Item ${index + 1}`} style="max-width: fit-content; min-width: 10px;" padding={0}/>
 
                 {#if d.type == "single"}
-                    <button class="controlButton" onclick={() => makeMulti(d)}>
+                    <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => makeMulti(d)}>
                         <PlusCircle size={20} />
                     </button>
                 {/if}
 
-                <button class="controlButton fail" onclick={() => deleteItem(index)}>
+                <button class="controlButton fail {settings.animations ? "anim" : ""}" onclick={() => deleteItem(index)}>
                     <CircleX size={20} />
                 </button>
 
@@ -78,7 +78,7 @@
     {#if editing}
 
         <div class="inline">
-            <button class="controlButton" onclick={addData}>
+            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={addData}>
                 <PlusCircle size={20} />
             </button>
             <p>New</p>
@@ -120,6 +120,9 @@
         align-items: center;
         cursor: pointer;
         justify-content: center;
+    }
+
+    .todoBorder.anim {
         transition:
             background-color 500ms
         ;
@@ -141,11 +144,12 @@
         width: fit-content;
         color: var(--text-color);
         cursor: pointer;
-        transition:
-        color 250ms
-        ;
         padding: 0px;
         box-sizing: border-box;
+    }
+
+    .controlButton.anim {
+        transition: color 250ms;
     }
 
     .controlButton:hover {

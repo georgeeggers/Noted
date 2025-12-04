@@ -7,7 +7,8 @@ export let settings = $state({
     fontSize: 'Normal',
     font: "Monospace",
     border: "Rounded",
-    themeIndex: 0
+    themeIndex: 0,
+    animations: true
 })
 
 const encoder = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+\`~,./<>?;\':\"[]{}\\|";

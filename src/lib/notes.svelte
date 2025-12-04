@@ -429,11 +429,11 @@
 
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="node" style='
+      <div class="node {settings.animations ? "anim" : ""}" style='
         transform: translate({n.x}px, {n.y}px);
         {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2; border: 1px solid var(--lightest-bg-color);": ""} 
         max-width: {n.type == "image" ? settings.imageWidth : (n.type == "note" ? settings.noteWidth : "1000000")}px;'
-        transition:scale={{ duration: 250 }}
+        transition:scale={{ duration: settings.animations ? 250 : 0 }}
         onmousedown={() => focusNode(i)}
         ontouchstart={(e) => focusNode(i)}
         bind:this={n.handle}
@@ -472,10 +472,10 @@
               ondragover={(e) => e.preventDefault()}
               style="{n.editing ? "cursor: pointer;" : ""}"
             >
-              <img src="{get_thumbnail(n.file)}" class="thumbnailImage {n.editing ? "hover" : ""}" alt="thumbnail" draggable="false"/>
+              <img src="{get_thumbnail(n.file)}" class="thumbnailImage {settings.animations ? "anim" : ""} {n.editing ? "hover" : ""}" alt="thumbnail" draggable="false"/>
             </label>
           {:else}
-            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+            <label class="imagePlaceholder {settings.animations ? "anim" : ""} {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
                 ondrop={(e) => handleFileChange(e, n)}
                 ondragover={(e) => e.preventDefault()}
             >
@@ -494,14 +494,14 @@
           {/if}
 
           {#if n.file != null}
-            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row; {n.editing ? "cursor: pointer;" : ""}"for="uploadTrigger{n.id}"
+            <label class="imagePlaceholder {settings.animations ? "anim" : ""} {n.editing ? "hover" : ""}" style="flex-direction: row; {n.editing ? "cursor: pointer;" : ""}"for="uploadTrigger{n.id}"
                 ondrop={(e) => handleFileChange(e, n)}
                 ondragover={(e) => e.preventDefault()}
             >
               <File size={64} />
             </label>
           {:else}
-            <label class="imagePlaceholder {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
+            <label class="imagePlaceholder {settings.animations ? "anim" : ""} {n.editing ? "hover" : ""}" style="flex-direction: row;"for="uploadTrigger{n.id}"
                 ondrop={(e) => handleFileChange(e, n)}
                 ondragover={(e) => e.preventDefault()}
             >
@@ -516,25 +516,25 @@
         {/if}
         
         <span class="controlBar">
-          <button class="controlButton" onclick={() => toggleEdit(n)} style="{n.editing ? "color: var(--light-main-color); !important" : ""}">
+          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => toggleEdit(n)} style="{n.editing ? "color: var(--light-main-color); !important" : ""}">
             <PencilLine size={20} />
           </button>
 
-          <button class="controlButton" onclick={() => deleteNode(i)}>
+          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => deleteNode(i)}>
             <Trash size={20} />
           </button>
 
           {#if n.type == "file" || n.type == "image"}
-            <button class="controlButton" onclick={() => download(n)}>
+            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => download(n)}>
               <Download size={20} />
             </button>
           {:else}
-            <button class="controlButton" onclick={() => copy(n)}>
+            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => copy(n)}>
               <Copy size={20} />
             </button>
           {/if}
 
-          <button class='controlButton' draggable="false" 
+          <button class='controlButton {settings.animations ? "anim" : ""}' draggable="false" 
             onmousedown={(e) => startDragDesktop(e, n)}
             onmouseup={(e) => endDragDesktop(e, n)}
           >
@@ -552,32 +552,32 @@
 </div>
 
 <div class="nodeSelector">
-  <button onclick={() => addNode("note")}>
+  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("note")}>
     <ScrollText size={24} />
   </button>
 
-  <button onclick={() => addNode("todo")}>
+  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("todo")}>
     <ListTodo size={24} />
   </button>
 
-  <button onclick={() => addNode("image")}>
+  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("image")}>
     <Image size={24} />
   </button>
 
-  <button onclick={() => addNode("file")}>
+  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("file")}>
     <File size={24} />
   </button>
 
   <div class="spacer"></div>
 
-  <button onclick={sort}>
+  <button class='{settings.animations ? "anim" : ""}' onclick={sort}>
     <LayoutGrid size={24}/>
   </button>
 
 </div>
 {#if showZoom}
-  <div class="zoomLevel"
-    transition:fly={{ x: 100, duration: 250 }}
+  <div class="zoomLevel {settings.animations ? "anim" : ""}"
+    transition:fly={{ x: 100, duration: settings.animations ? 250 : 0 }}
   >
     <p>{Math.round((1 / zoomLevel) * 100) / 100}x</p>
     <Search size=20 />
@@ -586,7 +586,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="headerBar" onclick={goBack}>
+<div class="headerBar {settings.animations ? "anim" : ""}" onclick={goBack}>
   <p>{appState.selectedBoard.boardName}</p>
   {#if appState.selectedBoard.boardType == "local" }
     <Laptop size={20} />
@@ -594,7 +594,7 @@
     <Cloud size={20} />
   {/if}
   {#if difs.length > 0}
-    <button onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
+    <button class='{settings.animations ? "anim" : ""}' onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
       <CircleSmall size={20} />
     </button>
   {/if}
@@ -604,20 +604,20 @@
 
 {#if alertUnsaved}
   <label class="blocker"
-    transition:fade={{ duration: 250 }}
+    transition:fade={{ duration: settings.animations ? 250 : 0 }}
     for="closePopup"
   >
 
     <div class="unsavedAlert"
-      transition:fly={{ x: 50, duration: 250 }}
+      transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
     >
       <p>You have unsaved changes!</p>
       <div class="buttons">
-        <button onclick={saveAndCont} style='width: fit-content;'>
+        <button onclick={saveAndCont} style='width: fit-content;' class='{settings.animations ? "anim" : ""}'>
           <CheckCircle size={20} />
           Save
         </button>
-        <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;'>
+        <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;' class='{settings.animations ? "anim" : ""}'>
           <CircleX size={20} />
           Discard
         </button>
@@ -662,10 +662,13 @@
     border-radius: var(--border-radius);
     padding: 10px;
     cursor: pointer;
-    transition: background-color .25s ease;
     color: var(--text-color);
     font-size: calc(14px + var(--font-size-modifier));
     border: 1px solid var(--lightest-bg-color);
+  }
+
+  .buttons button.anim {
+    transition: background-color .25s ease;
   }
 
   .buttons button:hover {
@@ -680,7 +683,7 @@
     box-sizing: border-box;
   }
 
-  .hover {
+  .hover.anim {
     transition: 
       250ms ease
     ;
@@ -714,10 +717,13 @@
     border-radius: var(--border-radius);
     gap: 10px;
     color: var(--header-color);
-    transition: background-color .25s ease;
     backdrop-filter: blur(5px);
     cursor: pointer;
     border: 1px solid var(--lightest-bg-color);
+  }
+
+  .zoomLevel.anim {
+    transition: background-color .25s ease;
   }
 
   .headerBar {
@@ -737,10 +743,13 @@
     border-radius: var(--border-radius);
     gap: 10px;
     color: var(--header-color);
-    transition: background-color .25s ease;
     backdrop-filter: blur(5px);
     cursor: pointer;
     border: 1px solid var(--lightest-bg-color);
+  }
+
+  .headerBar.anim {
+    transition: background-color .25s ease;
   }
 
   .headerBar:hover {
@@ -763,8 +772,12 @@
     display: flex;
     cursor: pointer;
     color: var(--header-color);
+  }
+
+  .nodeSelector button.anim, .headerBar button.anim {
     transition: color .25s ease;
   }
+
   .nodeSelector {
     border: 1px solid var(--lightest-bg-color);
   }
@@ -780,7 +793,7 @@
     100% { transform: rotate(0deg); }
   }
 
-  .nodeSelector button:hover:not(.noAnim) {
+  .nodeSelector button.anim:hover {
     animation: shake .5s;
   }
 
@@ -862,16 +875,19 @@
     padding: 20px;
     border-radius: var(--border-radius);
     position: absolute;
-    transition: 
-      background-color 250ms,
-      border-radius 250ms,
-      scale 500ms
-    ;
+
     backdrop-filter: blur(var(--blur-radius));
     min-width: 100px;
     border: 1px solid var(--lighter-bg-color);
   }
 
+  .node.anim {
+    transition: 
+      background-color 250ms,
+      border-radius 250ms,
+      scale 500ms
+    ;
+  }
 
   .node p {
     margin: 0px;
@@ -898,11 +914,14 @@
     width: fit-content;
     color: var(--text-color);
     cursor: pointer;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
+  .controlButton.anim {
     transition:
       color 250ms
     ;
-    padding: 0px;
-    box-sizing: border-box;
   }
 
   .controlButton:hover {
@@ -918,6 +937,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    color: var(--header-color);
     text-align: center;
   }
 
@@ -926,7 +946,7 @@
     to {transform: rotate(360deg);}
   }
 
-  .spin:not(.noAnims) {
+  .spin.anim {
     animation: spin 1.5s;
     animation-iteration-count: infinite;
     display: flex;

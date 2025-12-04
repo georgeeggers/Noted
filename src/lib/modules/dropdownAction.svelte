@@ -1,6 +1,7 @@
 <script>
 import { ChevronDown } from '@lucide/svelte';
     import { fly } from 'svelte/transition';
+    import { settings } from '../../global.svelte';
 
 let expanded = $state(false);
 let { options, stickLeft, display = $bindable() } = $props();
@@ -18,7 +19,7 @@ const click = (a) => {
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div class="dropDown"
+  <div class="dropDown {settings.animations ? "anim" : ""}"
     onclick={() => {expanded = !expanded}}
   >
     <ChevronDown size=16 />
@@ -27,14 +28,14 @@ const click = (a) => {
     {#if expanded} 
       
       <div class="dropdownContent" style="{stickLeft ? "left" : "right"}: 0px;"
-        transition:fly={{ x: 50, duration: 250}}
+        transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
       >
         {#each options as a}
             <div class="choice"
               onclick={() => click(a)}
             >
-              <div class="option">
-                  <p>{a.display}</p>
+              <div class="option {settings.animations ? "anim" : ""}">
+                  <p class='{settings.animations ? "anim" : ""}'>{a.display}</p>
               </div>
             </div>
         {/each}
@@ -56,13 +57,16 @@ const click = (a) => {
   }
 
   .option {
-    transition: background-color .25s ease;
     padding: 3px;
     box-sizing: border-box;
     border-radius: var(--border-radius);
     padding-left: 5px;
     padding-right: 5px;
     color: var(--text-color);
+  }
+
+  .option.anim {
+    transition: background-color .25s ease;
   }
 
   .option:hover {
@@ -75,15 +79,18 @@ const click = (a) => {
   }
 
   .choice p {
-    transition: color .25s ease;
     color: var(--text-color);
+  }
+
+  .choice p.anim {
+    transition: color .25s ease;
   }
 
 
 
   .dropDown {
     width: fit-content;
-    height: fit-content;
+    height: 45px;
     padding: 10px;
     background-color: var(--lighter-bg-color);
     border-radius: var(--border-radius);
@@ -96,8 +103,11 @@ const click = (a) => {
     position: relative;
     border: 1px solid var(--lightest-bg-color);
     box-sizing: border-box;
-    transition: background-color .25s ease;
     color: var(--text-color);
+  }
+
+  .dropDown.anim {
+    transition: background-color .25s ease;
   }
 
   .dropDown:hover {

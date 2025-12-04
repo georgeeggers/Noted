@@ -1,7 +1,7 @@
 <script>
     import { loadBoards, deleteBoard, makeLocalBoard, makeServerBoard, deleteAllLocal } from "../backend.svelte";
     import { onMount } from "svelte";
-    import { appState } from "../global.svelte";
+    import { appState, settings } from "../global.svelte";
     import { Cloud, Laptop, LucideArrowLeft, PlusCircle, Settings2, Trash} from "@lucide/svelte";
     import { replace } from 'svelte-spa-router';
     import { fade, fly } from "svelte/transition";
@@ -62,10 +62,10 @@
 
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div class="board" 
+                <div class="board {settings.animations ? 'anim' : ""}" 
                     onmousedown={(e) => handleClick(e, b, i)}
-                    transition:fly={{ duration: 250, x: -40}}
-                    animate:flip={{ duration: 250 }}
+                    transition:fly={{ duration: settings.animations ? 250 : 0, x: -40}}
+                    animate:flip={{ duration: settings.animations ? 250 : 0 }}
                 >
                     <div class="headerRow">
                         <p>{b.boardName}</p>
@@ -81,9 +81,9 @@
             {#if searchTerm != ""}
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div class="button" 
+                <div class="button {settings.animations ? 'anim' : ""}" 
                     onclick={() => {creating = true}}
-                    transition:fly={{ duration: 250, x: -40}}  
+                    transition:fly={{ duration: settings.animations ? 250 : 0, x: -40}}  
                 >
                     <PlusCircle size={18} />
                     <p>Create "{searchTerm}"</p>
@@ -92,9 +92,9 @@
 
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div class="button" 
+            <div class="button {settings.animations ? 'anim' : ""}" 
                 onclick={() => replace("/settings")}
-                transition:fly={{ duration: 250, x: -40}}  
+                transition:fly={{ duration: settings.animations ? 250 : 0, x: -40}}  
             >
                 <Settings2 size={18} />
                 <p>Settings</p>
@@ -106,12 +106,12 @@
 
     {#if deleteHandler != null}
         <label class="blocker"
-            transition:fade={{ duration: 250 }}
+            transition:fade={{ duration: settings.animations ? 250 : 0 }}
             for='closeDelete'
         >
 
         <div class="unsavedAlert"
-            transition:fly={{ x: 50, duration: 250 }}
+            transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
         >
             <p>Delete Board?</p>
             <div class="buttons">
@@ -134,12 +134,12 @@
 
     {#if creating}
         <label class="blocker"
-            transition:fade={{ duration: 250 }}
+            transition:fade={{ duration:  settings.animations ? 250 : 0 }}
             for='closeCreate'
         >
 
             <div class="unsavedAlert"
-                transition:fly={{ x: 50, duration: 250 }}
+                transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
             >
                 <p>Local Or Server</p>
                 <div class="buttons">
@@ -165,7 +165,6 @@
 
     .button {
         background-color: var(--lighter-bg-color);
-        transition: background-color .25s ease;
         border: none;
         border-radius: var(--border-radius);
         box-sizing: border-box;
@@ -178,6 +177,10 @@
         gap: 7px;
         cursor: pointer;
         border: 1px solid var(--lightest-bg-color);
+    }
+
+    .button.anim {
+        transition: background-color .25s ease;
     }
 
     .boards {
@@ -237,10 +240,13 @@
         border-radius: var(--border-radius);
         background-color: var(--light-bg-color);
         box-sizing: border-box;
-        transition: background-color .25s ease;
         gap: 10px;
         color: var(--text-color);
         border: 1px solid var(--lighter-bg-color);
+    }
+
+    .board.anim {
+        transition: background-color .25s ease;
     }
 
     .headerRow p {

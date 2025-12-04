@@ -4,6 +4,7 @@
     import DropdownAction from "./modules/dropdownAction.svelte";
     import { color, loadTheme, saveSettings, settings, themes } from "../global.svelte";
     import DropdownSelector from "./modules/dropdownSelector.svelte";
+    import Toggle from "./modules/toggle.svelte";
 
     let fonts = ['Monospace', "Arial", "Roboto"];
     let fontSizes = ["Smaller", "Small", "Normal", "Big", "Bigger"];
@@ -13,7 +14,6 @@
     const save = async (a) => {
         await saveSettings();
     }
-
 </script>
 
 
@@ -24,7 +24,7 @@
 
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div class="headerBar" onclick={() => replace("/")}>
+    <div class="headerBar {settings.animations ? "anim" : ""}" onclick={() => replace("/")}>
         <p>Back</p>
         <ArrowLeft size={20} />
     </div>
@@ -76,6 +76,15 @@
                 <DropdownSelector stickLeft={false} options={gaps} bind:selected={settings.gap} displayFunc={(a) => {return `${a}px`}} callbackFunc={save}/>
             </div>
 
+
+            <div class="subSetting">
+                <div class="text">
+                    <p class='settingName'>Animations</p>
+                    <p>Controls all animations and microtransitions</p>
+                </div>
+                <Toggle bind:value={settings.animations} />
+            </div>
+
         </div>
 
         <div class="setting">
@@ -85,7 +94,7 @@
                 <div class="themeContainer">
                     {#each themes as t, i}
                         <button class='invis' id='{t.name}' onclick={() => loadTheme(t, i)}>{t.name}</button>
-                        <label class='theme {settings.themeIndex == i ? 'selected' : ""}' for="{t.name}">
+                        <label class='theme {settings.animations ? "anim" : ""} {settings.themeIndex == i ? 'selected' : ""}' for="{t.name}">
                             {#if t.type == "dark"}
                                 <Moon size=20 />
                             {:else}
@@ -98,11 +107,7 @@
         </div>
 
     </div>
-
-
-
 </div>
-
 
 
 <style>
@@ -129,9 +134,12 @@
     border: 1px solid var(--lightest-bg-color);
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background .25s ease;
     color: var(--text-color);
     align-items: center;
+}
+
+.theme.anim {
+    transition: background .25s ease;
 }
 
 .theme:hover {
@@ -235,10 +243,13 @@
     border-radius: var(--border-radius);
     gap: 10px;
     color: var(--header-color);
-    transition: background-color .25s ease;
     backdrop-filter: blur(5px);
     cursor: pointer;
     border: 1px solid var(--lightest-bg-color);
+}
+
+.headerBar.anim {
+    transition: background-color .25s ease;
 }
 
 .headerBar:hover {
