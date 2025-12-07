@@ -1,46 +1,17 @@
-ToDo
+FINAL TODO BEFORE 1.0
 
-Add Different Node Types
- | [X] Text
- | [X] Todo
- | File
- |  | [X] Image
- |  | [X] Regular Files
- |  | [-] Music Player
-[X] Font Picker
-[Xx] Option to connect to pb
-[X] Figure out node chooser UI
-[ ] Add a server utility
-[X] Update default theme to be Rosé Pine Moon (changed to a custom catpuccin-esq theme)
-Save to fs on desktop
- | [X] Have saving of nodes occur on control S
- | [X] Create a dif system for easier saving with the sql interface
- | Boards
- |  | [X] Add board system so the user can save to different boards
- |  | [X] Load data from a board on load
- |  | [X] Add the ability to sync certain boards to server and certain boards to local
- |  | [X] Make board UI not look like crap
-
-[-] Explore postgres instead of SQLite for backend driver
-[X] Brand app (logo and whatnot)
-[X] Ctrl R to sort notes
-[X] Some function to zoom
-[-] Custom Titlebar
-[X] Settings
-
- * * * Server Functions * * * 
-
-[X] Load boards
-[X] Load nodes from a board
-[X] Save nodes
-
-
-
+[ ] Change the names of boards
+[ ] Copy server board to local board and vise versa
+[ ] Make settings menu look a little better
+[ ] Update some of the themes to not look so bad
+[ ] Add the ability to password-protect server
+[ ] Add more themes
 
 
 Bugs
 
+! [ ] Issue with using files on server nodes
+
 [ ] Some Error with white spaces on fancy textbox
-[-] Buncha issues with mobile. Work on later (mobile no longer in plans... sorry)
 [ ] Rendering issues with BG and Icons when zooming on non-chromium systems
-[ ] Overlap with zoom level popup and notifications
+[ ] Change notifications to not have the same border every time

@@ -1,15 +1,14 @@
 <script>
-  // this is a custom textarea like solution for lack of support on webkit and gecko
+  // this is a custom textarea like solution for lack of support on webkit and gekko
   import Textarea from './modules/textarea.svelte';
   import { appState, getID, settings, nodes, updateDif, difs, createDebounce, notifications, customSlide, addNotification } from '../global.svelte';
-  import { fade, fly, scale, slide } from 'svelte/transition';
+  import { fade, fly, scale } from 'svelte/transition';
 
   import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric, FileCheck } from '@lucide/svelte';
   import { onDestroy, onMount } from 'svelte';
-    import { loadLocal, loadServer, saveLocal, saveServer } from '../backend.svelte';
-    import Todo from './modules/todo.svelte';
-    import { replace } from 'svelte-spa-router';
-    import app from '../main';
+  import { loadLocal, loadServer, saveLocal, saveServer } from '../backend.svelte';
+  import Todo from './modules/todo.svelte';
+  import { replace } from 'svelte-spa-router';
 
   let selected = $state(-1);
 
@@ -22,11 +21,7 @@
     replace('/');
   }
 
-
   // node logic
-
-
-
 
   const addNode = (type) => {
 
@@ -107,19 +102,19 @@
   const zoomDebouncer = createDebounce(() => {showZoom = false}, 3000);
 
   const keydownLogic = async (e) => {
-    if(e.key === 's' && e.ctrlKey){
+    if(e.key === 's' && (e.ctrlKey || e.metaKey)){
       appState.selectedBoard.boardType == "local" ? saveLocal(appState.selectedBoard.id) : saveServer(appState.selectedBoard.id)
-    } else if (e.key === 'r' && e.ctrlKey){
+    } else if (e.key === 'r' && (e.ctrlKey || e.metaKey)){
       // replace refresh with sorting
       e.preventDefault();
       await sort();
-    } else if (e.key === "-" && e.ctrlKey){
+    } else if (e.key === "-" && (e.ctrlKey || e.metaKey)){
       showZoom = true;
       zoomDebouncer();
       if(zoomIndex != 0){
         zoomIndex--;
       }
-    } else if ((e.key === "=" || e.key === "+") && e.ctrlKey){
+    } else if ((e.key === "=" || e.key === "+") && (e.ctrlKey || e.metaKey)){
       showZoom = true;
       zoomDebouncer();
       if(zoomIndex != levels.length - 1){
@@ -442,6 +437,15 @@
     {/if}
   </div>
 
+  {#if showZoom}
+    <div class="headerDiv {settings.animations ? "anim" : ""}"
+      transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
+    >
+      <p>{Math.round((1 / zoomLevel) * 100) / 100}x</p>
+      <Search size=20 />
+    </div>
+  {/if}
+
   {#each notifications as n}
     <div class="headerDiv {settings.animations ? 'anim' : ""}" style="background-color: {n.c};"
         transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
@@ -614,14 +618,6 @@
   </button>
 
 </div>
-{#if showZoom}
-  <div class="zoomLevel {settings.animations ? "anim" : ""}"
-    transition:fly={{ x: 100, duration: settings.animations ? 250 : 0 }}
-  >
-    <p>{Math.round((1 / zoomLevel) * 100) / 100}x</p>
-    <Search size=20 />
-  </div>
-{/if}
 
 <button class='invis' id='closePopup' onclick={() => {alertUnsaved = false;}}>Close Popup</button>
 
