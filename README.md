@@ -2,7 +2,7 @@
 
 <img src='src-tauri/icons/Square310x310Logo.png' style='width: 100px; height: 100px;'>
 
-Noted is a graphical thought organizer and notes app made for the 2026 WCPS Media Expo.
+Noted is a graphical thought organizer and note taking app made for the 2026 WCPS Media Expo.
 # Why Noted?
 Noted isn't your average note taking app. It's a graphical thought organizer. Noted redifines how notes are taken, by providing users with a 2d workspace, called a Board. Users can spawn various different nodes, and rearrange them, almost like making a digital scrapbook. Noted has all sorts of different nodes for every scenario, such as
  - Text Nodes for storing plaintext notes
@@ -11,14 +11,14 @@ Noted isn't your average note taking app. It's a graphical thought organizer. No
  - File Nodes for uploading and downloading files
 # How does it work?
 Noted's frontend utilizes Tauri, a lightweight alternative to Electron. The frontend was built with the Svelte framework, providing an easy to use and beautiful UI, whilst the backend is handled with Javascript and Rust.
-The backend works in a couple of different ways. Users can choose to store everything locally, which uses a SQLite driver and custom interfacing to provide a quick and reliable way of storing data.
-However, a spare laptop or Rasberry Pi can easily be converted into a server using PocketBase and the provided JSON schema. This allows users to create their own "cloud" servers, allowing notes to be synchronized across devices
+The backend works in a couple of different ways. Users can choose to store everything locally, which uses a SQLite driver and custom interfacing to provide a quick and reliable way of storing data on your own machine.
+However, a spare laptop or Rasberry Pi can easily be converted into a server using PocketBase and the provided JSON schema. This allows users to create their own "cloud" servers, allowing notes to be synchronized across devices.
 # Installation
 The latest release should be avaiable in the [release tab](https://github.com/georgeeggers/Noted/releases)
-However, certain systems may be unavailable. To solve this, compile from source.
+However, certain systems may be unavailable or may not work. To ensure Noted will work on your device, build from source as directed below.
 # Building from source
-To begin, make sure you have git, npm, and the prerequisites for [Tauri](https://v2.tauri.app/start/prerequisites/)
-Once you're ready, clone the repo from github
+To begin, make sure you have Git, NPM, and the prerequisites for [Tauri](https://v2.tauri.app/start/prerequisites/)
+Once the dependancies are installed, clone the repo from github
 ```
 git clone https://github.com/georgeeggers/Noted
 ```
