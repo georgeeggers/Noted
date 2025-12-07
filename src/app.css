@@ -132,3 +132,102 @@ html, body, #root {
     display: flex;
     flex-direction: column;
 }
+
+.iconWrapper {
+    width: fit-content;
+    height: fit-content;
+    max-height: 20px;
+    box-sizing: border-box;
+    transform-origin: center center;
+    color: var(--header-color);
+}
+
+@keyframes spin {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+.spin {
+    animation: spin 1s;
+    animation-iteration-count: infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+
+    .uiPopups {
+        position: fixed;
+        right: 0px;
+        top: 0px;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        z-index: 100;
+    }
+
+
+
+  .headerDiv {
+    width: fit-content;
+    box-sizing: border-box;
+    background-color: var(--input-color);
+    height: 45px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--border-radius);
+    gap: 10px;
+    color: var(--header-color);
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    border: 1px solid var(--lightest-bg-color);
+    margin-left: auto;
+  }
+
+  .headerDiv.anim {
+    transition: background-color .25s ease;
+  }
+
+  .headerDiv:hover {
+    background-color: var(--lightest-bg-color);
+  }
+
+  .headerDiv p, .zoomLevel p {
+    font-size: calc(16px + var(--font-size-modifier));
+    color: var(--header-color);
+    margin: 0px;
+  }
+
+
+
+  
+  @keyframes yay {
+    0% { transform: rotate(0deg); }
+    33% { transform: rotate(-45deg) scale(0.8); }
+    66% { transform: rotate(45deg) scale(1.1); }
+    100% { transform: rotate(0deg); }
+  }
+
+  .yay {
+    animation: yay 2s;
+    animation-delay: 1s;
+  }
+
+  @keyframes dang {
+    25% { transform: rotate(0deg) scale(1.2); }
+    100% { transform: rotate(3600deg) scale(0); }
+  }
+
+  .error {
+    animation: dang 4s;
+    animation-delay: 1s;
+  }

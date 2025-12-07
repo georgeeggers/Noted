@@ -1,10 +1,10 @@
 <script>
     import { replace } from "svelte-spa-router";
-    import { ArrowLeft, Moon, Sun } from "@lucide/svelte";
-    import DropdownAction from "./modules/dropdownAction.svelte";
-    import { color, loadTheme, saveSettings, settings, themes } from "../global.svelte";
+    import { ArrowLeft, CheckCircle,Moon, RefreshCcw, Sun } from "@lucide/svelte";
+    import { loadTheme, saveSettings, settings, themes } from "../global.svelte";
     import DropdownSelector from "./modules/dropdownSelector.svelte";
     import Toggle from "./modules/toggle.svelte";
+    import { changeUrl } from "../backend.svelte";
 
     let fonts = ['Monospace', "Arial", "Roboto"];
     let fontSizes = ["Smaller", "Small", "Normal", "Big", "Bigger"];
@@ -14,20 +14,29 @@
     const save = async (a) => {
         await saveSettings();
     }
+
+
+
+    $effect(() => {
+        changeUrl(settings.url)
+    })
+
 </script>
 
-
+<div class="uiPopups">
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div class="headerDiv {settings.animations ? "anim" : ""}" onclick={() => replace("/")}>
+        <p>Back</p>
+        <ArrowLeft size={20} />
+    </div>
+</div>
 
 <div class="globalArea">
 
     <h1 class='header'>Settings</h1>
 
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div class="headerBar {settings.animations ? "anim" : ""}" onclick={() => replace("/")}>
-        <p>Back</p>
-        <ArrowLeft size={20} />
-    </div>
+
 
     
     <div class="content">
@@ -89,6 +98,28 @@
 
         <div class="setting">
             <div class="title">
+                <p>Server</p>
+            </div>
+
+            <div class="subSetting">
+                <div class="text">
+                    <p class='settingName'>Enable Server Usage</p>
+                    <p>Determines if the app should attempt to connect to a server at all</p>
+                </div>
+                <Toggle bind:value={settings.doServer} />
+            </div>
+
+            <div class="title">
+                <p>Server URL</p>
+            </div>
+            <div class="settingsContainer">
+                <input class="{settings.animations ? "anims" : ""}" bind:value={settings.url} placeholder="https://example.com">
+            </div>
+
+        </div>
+
+        <div class="setting">
+            <div class="title">
                 <p>Theme</p>
             </div>
                 <div class="themeContainer">
@@ -112,6 +143,41 @@
 
 <style>
 
+input {
+    border: 1px solid var(--lightest-bg-color);
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    font-size: calc(16px + var(--font-size-modifier)); 
+    background-color: var(--lighter-bg-color);
+    width: 80%;
+    outline: none !important;
+    color: var(--text-color);
+}
+
+input::placeholder {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+input.anims {
+    transition: background-color .25s ease;
+}
+
+input:focus {
+    background-color: var(--lightest-bg-color);
+}
+
+.settingsContainer {
+    width: 100%;
+    height: fit-content;
+    gap: 10px;
+    align-items: center;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: row;
+    justify-content: center;
+}
 
 
 .themeContainer {
@@ -226,38 +292,4 @@
 }
 
 
-.headerBar {
-    width: fit-content;
-    box-sizing: border-box;
-    background-color: var(--input-color);
-    height: fit-content;
-    position: fixed;
-    z-index: 10;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    border-radius: var(--border-radius);
-    gap: 10px;
-    color: var(--header-color);
-    backdrop-filter: blur(5px);
-    cursor: pointer;
-    border: 1px solid var(--lightest-bg-color);
-}
-
-.headerBar.anim {
-    transition: background-color .25s ease;
-}
-
-.headerBar:hover {
-    background-color: var(--lightest-bg-color);
-}
-
-.headerBar p {
-    font-size: calc(16px + var(--font-size-modifier));
-    margin: 0px;
-}
 </style>

@@ -1,6 +1,8 @@
 import Database from "@tauri-apps/plugin-sql";
-import { appState, boards, difs, getID, nodes } from "./global.svelte";
+import { addNotification, appState, boards, difs, getID, nodes, settings } from "./global.svelte";
 import { replace } from "svelte-spa-router";
+import Pocket from 'pocketbase'
+import { CircleX, HeartCrack, XIcon } from "@lucide/svelte";
 
 // encode files as a base64 string for the backend. Awful way to do it, but we ball
 
@@ -92,30 +94,35 @@ export const loadLocal = async (id) => {
     }
 }
 
-export const loadSever = async (id) => {
-
-}
-
-export const saveServer = async (id) => {
-
-}
-
 export const deleteAllLocal = async () => {
     const db = await Database.load("sqlite:data.db");
     const result = await db.execute(
         "DELETE FROM data WHERE type = 'image' OR type = 'file'"
-
     );
 }
 
 export const loadBoards = async () => {
     appState.boards.length = 0;
     const db = await Database.load("sqlite:data.db");
-    const result = await db.select("SELECT * FROM boards");
+    let result = await db.select("SELECT * FROM boards");
 
     for(let i of result){
         appState.boards.push(i);
     }
+
+    if(settings.doServer){
+        try {
+            const response = await pb.collection('boards').getFullList();
+            for(let i of response){
+                appState.boards.push(i);
+            }
+        } catch {
+            addNotification("Server Error!", "var(--fail-color)", CircleX, 4000, 'error');
+        }
+
+    }
+
+
 
     return result;
 
@@ -128,14 +135,76 @@ export const makeLocalBoard = async (name) => {
     appState.boards.push({id: id, boardType: "local", boardName: name});
 }
 
-export const makeServerBoard = async (name) => {
-    alert('Server boards coming soon!');
-}
-
 export const deleteBoard = async (b) => {
-    const db = await Database.load("sqlite:data.db");
-    const id = b.id;
-    let result = await db.execute('DELETE FROM boards WHERE id = $1', [id]);
-    result = await db.execute('DELETE FROM data where boardID = $1', [id]);
+    if(b.boardType){
+        const db = await Database.load("sqlite:data.db");
+        const id = b.id;
+        let result = await db.execute('DELETE FROM boards WHERE id = $1', [id]);
+        result = await db.execute('DELETE FROM data where boardID = $1', [id]);
+    } else {
+        const result = await pb.collection('boards').delete(b.id);
+        const targets = await pb.collection('data').getFullList({
+            filter: `boardID="${b.id}"`
+        })
+        for(let i of targets){
+            const result = await pb.collection('data').delete(i.id);
+        }
+    }
+
     await loadBoards();
 }
+
+
+
+
+
+
+
+let url = $state("");
+export const changeUrl = (d) => {
+    url = d;
+}
+let pb = $derived(new Pocket(url));
+
+
+
+
+export const loadServer = async (id) => {
+    // do this to reset the nodes array
+    nodes.length = 0;
+    difs.length = 0;
+    const result = await pb.collection('data').getFullList({
+        filter: `boardID="${id}"`
+    })
+    for(let i of result){
+        if (i.type == "todo"){
+            i.content = JSON.parse(i.content);
+        }
+        i.handle = null;
+        nodes.push(i);
+    }
+}
+
+export const saveServer = async (id) => {
+    // do some reasearch into how tarui interfaces with the SQL driver so we can just make one statement and hit the backend once overall instead of once for each dif
+
+    for(let i of difs){
+        if(i.action == "delete"){
+            const result = await pb.collection('data').delete(i.node.id);
+        } else if (i.action == "create"){
+            const result = await pb.collection('data').create(i.node)
+        } else if (i.action == 'update'){
+            const result = await pb.collection('data').update(i.node.id, i.node);
+        }
+    }
+
+    difs.length = 0;
+}
+
+export const makeServerBoard = async (name) => {
+    await pb.collection('boards').create({boardName: name});
+    
+    await loadBoards();
+}
+
+

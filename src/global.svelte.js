@@ -1,4 +1,6 @@
 import { load } from "@tauri-apps/plugin-store";
+import { changeUrl } from "./backend.svelte";
+import { icons, MailWarning } from "@lucide/svelte";
 
 export let settings = $state({
     noteWidth: 500,
@@ -8,10 +10,29 @@ export let settings = $state({
     font: "Monospace",
     border: "Rounded",
     themeIndex: 0,
-    animations: true
-})
+    animations: true,
+    doServer: true,
+    url: ""
+});
 
-const encoder = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=!@#$%^&*()_+\`~,./<>?;\':\"[]{}\\|";
+export let notifications = $state([]);
+
+export const addNotification = (text="Notification", color="var(--input-color);", icon=MailWarning, time=2000, iconClasses="") => {
+    let n = {
+        t: text,
+        c: color,
+        i: icon,
+        classes: iconClasses
+    }
+
+    notifications.push(n);
+    setTimeout(() => {
+        notifications.splice(notifications.indexOf(n), 1);
+    }, time)
+
+}
+
+const encoder = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
 export const random = (min, max) => {
     return (Math.floor(Math.random() * (max - min + 1)) + min)
@@ -19,7 +40,7 @@ export const random = (min, max) => {
 
 export const getID = () => {
     let id = "";
-    for(let i = 0; i < 10; i++){
+    for(let i = 0; i < 15; i++){
         id += encoder[random(0, encoder.length)];
     }
 
@@ -367,6 +388,8 @@ export const loadSettings = async () => {
         settings[key] = val;
     }
 
+
+    changeUrl(settings.url);
     await loadTheme(themes[settings.themeIndex], settings.themeIndex);
 }
 
@@ -378,4 +401,29 @@ export const createDebounce = (action, delay) => {
       timer = setTimeout(action, delay);
     }
   )
+}
+
+
+function cubic_out(t) {
+	const f = t - 1.0;
+	return f * f * f + 1.0;
+}
+
+export function customSlide (
+	node,
+	{ delay = 0, duration = 400, easing = cubic_out, start = 0, opacity = 0 } = {}
+) {
+	const style = getComputedStyle(node);
+	const target_opacity = +style.opacity;
+	const sd = 1 - start;
+	const od = target_opacity * (1 - opacity);
+	return {
+		delay,
+		duration,
+		easing,
+		css: (_t, u) => `
+			zoom: ${1 - sd * u};
+			opacity: ${target_opacity - od * u}
+		`
+	};
 }

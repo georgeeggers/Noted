@@ -1,0 +1,5 @@
+1: Obtain a pocketbase executable
+2: Run it, and setup a super user account
+3: Navigate to Settings > Import collection > Load from JSON file
+4: Setup any port forwarding or domain name systems you want
+5: Setup URL in Noted

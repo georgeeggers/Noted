@@ -1,14 +1,15 @@
 <script>
   // this is a custom textarea like solution for lack of support on webkit and gecko
   import Textarea from './modules/textarea.svelte';
-  import { appState, getID, settings, nodes, updateDif, difs, createDebounce } from '../global.svelte';
-  import { fade, fly, scale } from 'svelte/transition';
+  import { appState, getID, settings, nodes, updateDif, difs, createDebounce, notifications, customSlide, addNotification } from '../global.svelte';
+  import { fade, fly, scale, slide } from 'svelte/transition';
 
-  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric } from '@lucide/svelte';
+  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric, FileCheck } from '@lucide/svelte';
   import { onDestroy, onMount } from 'svelte';
-    import { loadLocal, saveLocal, saveServer } from '../backend.svelte';
+    import { loadLocal, loadServer, saveLocal, saveServer } from '../backend.svelte';
     import Todo from './modules/todo.svelte';
     import { replace } from 'svelte-spa-router';
+    import app from '../main';
 
   let selected = $state(-1);
 
@@ -41,7 +42,11 @@
         }] : "",
       editing: true,
       file: null,
-      id: getID(),
+      boardID: appState.selectedBoard.id
+    }
+
+    if(appState.selectedBoard.boardType){
+      n.id = getID();
     }
 
     nodes.push(n);
@@ -69,7 +74,6 @@
   let offsetY = $state(0);
 
   let dragLogicDesktop = (e) => {
-    console.log(e);
     nodes[selected].x += e.movementX * zoomLevel;
     nodes[selected].y += e.movementY * zoomLevel;
   }
@@ -132,6 +136,8 @@
 
       if(appState.selectedBoard.boardType == "local"){
         await loadLocal(appState.selectedBoard.id);
+      } else {
+        await loadServer(appState.selectedBoard.id);
       }
 
       document.addEventListener('keydown', keydownLogic)
@@ -197,6 +203,7 @@
     // @ts-ignore
     manager.href = url;
     manager.click();
+    addNotification("File Downloaded", "var(--input-color)", FileCheck, 4000, 'yay');
   }
 
   const handleTodoCopy = (data, depth, text) => {
@@ -229,6 +236,7 @@
       }
 
       await navigator.clipboard.writeText(text);
+      addNotification(text="Copied To Clipboard ", "var(--input-color);", Copy, 4000, "yay")
     } catch (error) {
       console.error('Failed to copy text: ', error);
     }
@@ -415,6 +423,37 @@
 
 </script>
 
+
+<div class="uiPopups">
+
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="headerDiv {settings.animations ? "anim" : ""}" onclick={goBack}>
+    <p>{appState.selectedBoard.boardName}</p>
+    {#if appState.selectedBoard.boardType == "local" }
+      <Laptop size={20} />
+    {:else}
+      <Cloud size={20} />
+    {/if}
+    {#if difs.length > 0}
+      <button class='{settings.animations ? "anim" : ""}' onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
+        <CircleSmall size={20} />
+      </button>
+    {/if}
+  </div>
+
+  {#each notifications as n}
+    <div class="headerDiv {settings.animations ? 'anim' : ""}" style="background-color: {n.c};"
+        transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
+    >
+      <div class="iconWrapper {settings.animations ? n.classes : ""}">
+          <n.i size={18} />
+      </div>
+      <p>{n.t}</p>
+    </div>
+  {/each}
+</div>
+
 <a id='linkManager' class='invis'>Link Manager</a>
 
 <div class="globalArea" style="
@@ -584,22 +623,6 @@
   </div>
 {/if}
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="headerBar {settings.animations ? "anim" : ""}" onclick={goBack}>
-  <p>{appState.selectedBoard.boardName}</p>
-  {#if appState.selectedBoard.boardType == "local" }
-    <Laptop size={20} />
-  {:else}
-    <Cloud size={20} />
-  {/if}
-  {#if difs.length > 0}
-    <button class='{settings.animations ? "anim" : ""}' onclick={appState.selectedBoard.boardType == "local" ? saveLocal : saveServer}>
-      <CircleSmall size={20} />
-    </button>
-  {/if}
-</div>
-
 <button class='invis' id='closePopup' onclick={() => {alertUnsaved = false;}}>Close Popup</button>
 
 {#if alertUnsaved}
@@ -726,43 +749,9 @@
     transition: background-color .25s ease;
   }
 
-  .headerBar {
-    width: fit-content;
-    box-sizing: border-box;
-    background-color: var(--input-color);
-    height: 45px;
-    position: fixed;
-    z-index: 10;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    border-radius: var(--border-radius);
-    gap: 10px;
-    color: var(--header-color);
-    backdrop-filter: blur(5px);
-    cursor: pointer;
-    border: 1px solid var(--lightest-bg-color);
-  }
 
-  .headerBar.anim {
-    transition: background-color .25s ease;
-  }
 
-  .headerBar:hover {
-    background-color: var(--lightest-bg-color);
-  }
-
-  .headerBar p, .zoomLevel p {
-    font-size: calc(16px + var(--font-size-modifier));
-    color: var(--header-color);
-    margin: 0px;
-  }
-
-  .nodeSelector button, .headerBar button {
+  .nodeSelector button, .headerDiv button {
     border: none;
     box-sizing: border-box;
     padding: 0px;
@@ -774,7 +763,7 @@
     color: var(--header-color);
   }
 
-  .nodeSelector button.anim, .headerBar button.anim {
+  .nodeSelector button.anim {
     transition: color .25s ease;
   }
 
@@ -782,7 +771,7 @@
     border: 1px solid var(--lightest-bg-color);
   }
 
-  .nodeSelector button:hover, .headerBar button:hover {
+  .nodeSelector button:hover {
     color: var(--main-color);
   }
 
@@ -940,21 +929,4 @@
     color: var(--header-color);
     text-align: center;
   }
-
-  @keyframes spin {
-    from {transform: rotate(0deg);}
-    to {transform: rotate(360deg);}
-  }
-
-  .spin.anim {
-    animation: spin 1.5s;
-    animation-iteration-count: infinite;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: fit-content;
-  }
-
 </style>

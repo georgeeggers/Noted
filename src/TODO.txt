@@ -28,6 +28,16 @@ Save to fs on desktop
 [ ] Custom Titlebar
 [X] Settings
 
+ * * * Server Functions * * * 
+
+[ ] Load boards
+[ ] Load nodes from a board
+[ ] Save nodes
+
+
+
+
+
 Bugs
 
 [ ] Some Error with white spaces on fancy textbox

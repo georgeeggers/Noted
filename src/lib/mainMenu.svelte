@@ -1,15 +1,18 @@
 <script>
     import { loadBoards, deleteBoard, makeLocalBoard, makeServerBoard, deleteAllLocal } from "../backend.svelte";
     import { onMount } from "svelte";
-    import { appState, settings } from "../global.svelte";
-    import { Cloud, Laptop, LucideArrowLeft, PlusCircle, Settings2, Trash} from "@lucide/svelte";
+    import { appState, customSlide, notifications, settings } from "../global.svelte";
+    import { Cloud, Laptop, LucideArrowLeft, PlusCircle, RefreshCcw, Settings2, Trash} from "@lucide/svelte";
     import { replace } from 'svelte-spa-router';
-    import { fade, fly } from "svelte/transition";
+    import { fade, fly, slide } from "svelte/transition";
     import { flip } from "svelte/animate";
+
+    let loading = $state(true);
 
     onMount(async () => {
 
         await loadBoards();
+        loading = false;
     });
 
     let searchTerm = $state("");
@@ -43,7 +46,50 @@
         }
     }
 
+    const create = () => {
+        if(settings.doServer){
+            creating = true;
+        } else {
+            makeBoard(false);
+        }
+    }
+
 </script>
+
+<div class="uiPopups">
+
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div class="headerDiv settings {settings.animations ? 'anim' : ""}" 
+        onclick={() => replace("/settings")}
+    >
+        <Settings2 size={18} />
+        <p>Settings</p>
+    </div>
+
+    {#if loading}
+        <div class="headerDiv {settings.animations ? 'anim' : ""}" 
+            transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
+        >
+            <div class="iconWrapper {settings.animations ? "spin" : ""}">
+                <RefreshCcw size={18} />
+            </div>
+            <p>Loading Boards</p>
+        </div>
+    {/if}
+
+    {#each notifications as n}
+        <div class="headerDiv {settings.animations ? 'anim' : ""}" style="background-color: {n.c};"
+            transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
+        >
+            <div class="iconWrapper {settings.animations ? n.classes : ""}">
+                <n.i size={18} />
+            </div>
+            <p>{n.t}</p>
+        </div>
+    {/each}
+
+</div>
 
 <div class="globalArea">
 
@@ -82,23 +128,13 @@
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <div class="button {settings.animations ? 'anim' : ""}" 
-                    onclick={() => {creating = true}}
+                    onclick={create}
                     transition:fly={{ duration: settings.animations ? 250 : 0, x: -40}}  
                 >
                     <PlusCircle size={18} />
                     <p>Create "{searchTerm}"</p>
                 </div>
             {/if}
-
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div class="button {settings.animations ? 'anim' : ""}" 
-                onclick={() => replace("/settings")}
-                transition:fly={{ duration: settings.animations ? 250 : 0, x: -40}}  
-            >
-                <Settings2 size={18} />
-                <p>Settings</p>
-            </div>
         </div>
     </div>
 
@@ -162,7 +198,6 @@
 </div>
 
 <style>
-
     .button {
         background-color: var(--lighter-bg-color);
         border: none;
