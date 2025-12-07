@@ -8,7 +8,7 @@ Add Different Node Types
  |  | [X] Regular Files
  |  | [-] Music Player
 [X] Font Picker
-[ ] Option to connect to pb
+[Xx] Option to connect to pb
 [X] Figure out node chooser UI
 [ ] Add a server utility
 [X] Update default theme to be Rosé Pine Moon (changed to a custom catpuccin-esq theme)
@@ -18,21 +18,21 @@ Save to fs on desktop
  | Boards
  |  | [X] Add board system so the user can save to different boards
  |  | [X] Load data from a board on load
- |  | [ ] Add the ability to sync certain boards to server and certain boards to local
+ |  | [X] Add the ability to sync certain boards to server and certain boards to local
  |  | [X] Make board UI not look like crap
 
 [-] Explore postgres instead of SQLite for backend driver
 [X] Brand app (logo and whatnot)
 [X] Ctrl R to sort notes
-[ ] Some function to zoom
-[ ] Custom Titlebar
+[X] Some function to zoom
+[-] Custom Titlebar
 [X] Settings
 
  * * * Server Functions * * * 
 
-[ ] Load boards
-[ ] Load nodes from a board
-[ ] Save nodes
+[X] Load boards
+[X] Load nodes from a board
+[X] Save nodes
 
 
 
@@ -42,3 +42,5 @@ Bugs
 
 [ ] Some Error with white spaces on fancy textbox
 [-] Buncha issues with mobile. Work on later (mobile no longer in plans... sorry)
+[ ] Rendering issues with BG and Icons when zooming on non-chromium systems
+[ ] Overlap with zoom level popup and notifications
