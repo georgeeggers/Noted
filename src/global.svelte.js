@@ -11,7 +11,7 @@ export let settings = $state({
     border: "Rounded",
     themeIndex: 0,
     animations: true,
-    doServer: true,
+    doServer: false,
     url: ""
 });
 
@@ -287,30 +287,30 @@ export const themes = [{
     type: "light",
     headerColor: "#1d1b18ff",
     textColor: "#2d2925",
-    mainColor: "#f59b42ff",
-    lightMainColor: "#f5942dff",
-    dimMainColor: "#b88352ff",
+    mainColor: "#d6893cff",
+    lightMainColor: "#c77116ff",
+    dimMainColor: "#966435ff",
     grayColor: "#dad4cfff",
     inputColor: "#d3b59f80",
     bgColor: "#fdfaf6",
     lightBgColor: "#f6f0ebff",
-    lighterBgColor: "#ece2daff",
-    lightestBgColor: "#d3b59fff",
+    lighterBgColor: "#e6dfdaff",
+    lightestBgColor: "#ccb9acff",
     fail: "#ff0000ff"
 },{
     name: "Skyline",
     type: "light",
     headerColor: "#0a1a2fff",
     textColor: "#14213d",
-    mainColor: "#0077b6",
-    lightMainColor: "#00b4d8",
-    dimMainColor: "#005f8a",
+    mainColor: "#0068a0ff",
+    lightMainColor: "#009dbdff",
+    dimMainColor: "#004d70ff",
     grayColor: "#b0c4de",
     inputColor: "#8fb2c980",
     bgColor: "#d6dce2ff",
-    lightBgColor: "#beccd6ff",
-    lighterBgColor: "#99afc2ff",
-    lightestBgColor: "#8fb2c9ff",
+    lightBgColor: "#ccd4daff",
+    lighterBgColor: "#a7b5c0ff",
+    lightestBgColor: "#a3bac9ff",
     fail: "#d62828ff"
 },
 {
@@ -334,9 +334,9 @@ export const themes = [{
     type: "light",
     headerColor: "#1a2e1aff",
     textColor: "#243424",
-    mainColor: "#5bb98c",
-    lightMainColor: "#84d9ab",
-    dimMainColor: "#449970",
+    mainColor: "#489771ff",
+    lightMainColor: "#5ab886ff",
+    dimMainColor: "#317755ff",
     grayColor: "#cfd8d3ff",
     inputColor: "#cce6d880",
     bgColor: "#f4fff9",
@@ -344,7 +344,22 @@ export const themes = [{
     lighterBgColor: "#d9efe4",
     lightestBgColor: "#cce6d8",
     fail: "#d81e1eff"
-}]
+},{
+    name: "Lavendar",
+    type: "light",
+    headerColor: "#1a2e1aff",
+    textColor: "#243424",
+    mainColor: "#905bd1ff",
+    lightMainColor: "#8f5bceff",
+    dimMainColor: "#603a9eff",
+    grayColor: "#cfd8d3ff",
+    inputColor:  "#ab98bd80",
+    bgColor: "#e3ddebff",
+    lightBgColor: "#d0c4daff",
+    lighterBgColor: "#bfadd1ff",
+    lightestBgColor: "#ab98bdff",
+    fail: "#df6174ff"
+},]
 
 
 

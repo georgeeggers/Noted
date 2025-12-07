@@ -1,8 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
-import { addNotification, appState, boards, difs, getID, nodes, settings } from "./global.svelte";
-import { replace } from "svelte-spa-router";
+import { addNotification, appState, difs, getID, nodes, settings } from "./global.svelte";
 import Pocket from 'pocketbase'
-import { CircleX, HeartCrack, XIcon } from "@lucide/svelte";
+import { CircleX } from "@lucide/svelte";
 
 // encode files as a base64 string for the backend. Awful way to do it, but we ball
 
@@ -177,7 +176,9 @@ export const loadServer = async (id) => {
         filter: `boardID="${id}"`
     })
     for(let i of result){
-        if (i.type == "todo"){
+        if (i.type == "image" || i.type == "file"){
+            i.file = pb.files.getURL(i, i.file);
+        } else if (i.type == "todo"){
             i.content = JSON.parse(i.content);
         }
         i.handle = null;
@@ -194,6 +195,15 @@ export const saveServer = async (id) => {
         } else if (i.action == "create"){
             const result = await pb.collection('data').create(i.node)
         } else if (i.action == 'update'){
+            if(i.node.type == "image" || i.node.type == "file"){
+                if(typeof(i.node.file) == "string"){
+                    const thing = i.node.file;
+                    delete i.node.file;
+                    const result = await pb.collection('data').update(i.node.id, i.node);
+                    i.node.file = thing;
+                    continue
+                }
+            }
             const result = await pb.collection('data').update(i.node.id, i.node);
         }
     }

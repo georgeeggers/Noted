@@ -137,6 +137,10 @@
                 </div>
         </div>
 
+        <div class="setting">
+            <p style="color: var(--text-color);">Made by George Eggers</p>
+        </div>
+
     </div>
 </div>
 
@@ -231,6 +235,12 @@ input:focus {
     gap: 20px;
     box-sizing: border-box;
     padding: 20px;
+}
+
+@media (max-width: 600px){
+    .subSetting {
+        flex-direction: column;
+    }
 }
 
 .text {

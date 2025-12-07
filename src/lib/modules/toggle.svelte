@@ -32,7 +32,7 @@ let click = () => {
     }
 
     .main {
-        width: 60px;
+        min-width: 60px;
         height: 30px;
         padding: 10px;
         background-color: var(--lighter-bg-color);

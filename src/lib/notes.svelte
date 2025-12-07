@@ -182,16 +182,20 @@
   };
 
   const get_thumbnail = (file) => {
-    try {
+
+    if(typeof(file) == "string"){
+      return file;
+    } else {
       const url = URL.createObjectURL(file);
       return url;
-    } catch {
-
     }
   }
 
   const download = (n) => {
-    const url = get_thumbnail(n.file);
+    let url = get_thumbnail(n.file);
+    if(appState.selectedBoard.boardType == undefined){
+      url += "?download=1"
+    }
     const manager = document.getElementById('linkManager');
     // @ts-ignore
     manager.download = n.file.name;

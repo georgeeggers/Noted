@@ -2,16 +2,16 @@ FINAL TODO BEFORE 1.0
 
 [ ] Change the names of boards
 [ ] Copy server board to local board and vise versa
-[ ] Make settings menu look a little better
-[ ] Update some of the themes to not look so bad
+[X] Make settings menu look a little better
+[X] Update some of the themes to not look so bad
 [ ] Add the ability to password-protect server
-[ ] Add more themes
+[X] Add more themes
 
 
 Bugs
 
-! [ ] Issue with using files on server nodes
+! [X] Issue with using files on server nodes
 
 [ ] Some Error with white spaces on fancy textbox
-[ ] Rendering issues with BG and Icons when zooming on non-chromium systems
+[-] Rendering issues with BG and Icons when zooming on non-chromium systems (just how MacOS rendering works)
 [ ] Change notifications to not have the same border every time

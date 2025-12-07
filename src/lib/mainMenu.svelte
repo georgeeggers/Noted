@@ -79,7 +79,7 @@
     {/if}
 
     {#each notifications as n}
-        <div class="headerDiv {settings.animations ? 'anim' : ""}" style="background-color: {n.c};"
+        <div class="headerDiv {settings.animations ? 'anim' : ""}" style="background-color: {n.c}; {n.c != "var(--input-color)" ? "border: none !important;" : ""}"
             transition:customSlide={{ duration: settings.animations ? 500 : 0 }}  
         >
             <div class="iconWrapper {settings.animations ? n.classes : ""}">
@@ -99,7 +99,7 @@
 
             
         <div class="searchBar">
-            <input type="text" bind:value={searchTerm} placeholder="Search or create new board...">
+            <input type="text" bind:value={searchTerm} placeholder="Search or create new board..." onkeydown={(e) => e.key == "Enter" && create()}>
         </div>  
 
         <div class="boards">
