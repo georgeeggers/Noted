@@ -193,7 +193,7 @@ export const saveServer = async (id) => {
         if(i.action == "delete"){
             const result = await pb.collection('data').delete(i.node.id);
         } else if (i.action == "create"){
-            const result = await pb.collection('data').create(i.node)
+            const result = await pb.collection('data').create(i.node);
         } else if (i.action == 'update'){
             if(i.node.type == "image" || i.node.type == "file"){
                 if(typeof(i.node.file) == "string"){

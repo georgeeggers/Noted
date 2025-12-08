@@ -784,13 +784,13 @@
     "type": "base",
     "fields": [
       {
-        "autogeneratePattern": "[a-z0-9]{15}",
+        "autogeneratePattern": "[a-zA-Z0-9]{15}",
         "hidden": false,
         "id": "text3208210256",
         "max": 15,
         "min": 15,
         "name": "id",
-        "pattern": "^[a-z0-9]+$",
+        "pattern": "^[a-zA-Z0-9]+$",
         "presentable": false,
         "primaryKey": true,
         "required": true,
@@ -846,13 +846,13 @@
     "type": "base",
     "fields": [
       {
-        "autogeneratePattern": "[a-z0-9]{15}",
+        "autogeneratePattern": "[a-zA-Z0-9]{15}",
         "hidden": false,
         "id": "text3208210256",
         "max": 15,
         "min": 15,
         "name": "id",
-        "pattern": "^[a-z0-9]+$",
+        "pattern": "^[a-zA-Z0-9]+$",
         "presentable": false,
         "primaryKey": true,
         "required": true,

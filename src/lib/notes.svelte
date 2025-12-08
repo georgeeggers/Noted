@@ -40,9 +40,7 @@
       boardID: appState.selectedBoard.id
     }
 
-    if(appState.selectedBoard.boardType){
-      n.id = getID();
-    }
+    n.id = getID();
 
     nodes.push(n);
 
