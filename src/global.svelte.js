@@ -41,7 +41,7 @@ export const random = (min, max) => {
 export const getID = () => {
     let id = "";
     for(let i = 0; i < 15; i++){
-        id += encoder[random(0, encoder.length)];
+        id += encoder[random(0, encoder.length - 1)];
     }
 
     return id;
