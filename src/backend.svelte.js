@@ -73,8 +73,11 @@ export const loadLocal = async (id) => {
     for(let i of result){
         if(i.type == "image" || i.type == "file"){
             if(i.file != null){
+                // im lokenuinely foolish for parsing the b64 by looking for spaces
+                // highkey forgot that file names could have spaces
+                // solution is such a hack but it works so i dont care
                 let parts = i.file.split(' ');
-                const bytes = atob(parts[1]);
+                const bytes = atob(parts[parts.length - 1]);
                 const byteArray1 = [];
                 for (let i = 0; i < bytes.length; i++) {
                     const byte = bytes.charCodeAt(i);

@@ -34,11 +34,10 @@
 
 
   onMount(async () => {
+    await loadSettings();
     document.addEventListener('contextmenu', (event) => { 
       event.preventDefault(); 
     });
-
-    await loadSettings();
 
     init = false;
 

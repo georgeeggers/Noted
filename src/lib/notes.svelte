@@ -278,7 +278,6 @@
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-
   let sortList = $state([])
 
   const sort = async () => {
@@ -301,7 +300,7 @@
         // @ts-ignore
         height: i.offsetHeight,
         // @ts-ignore
-        flatness: i.offsetWidth / i.offsetHeight,
+        sortingCritera: i.offsetWidth * i.offsetHeight,
         x: 0,
         y: 0,
         index: index
@@ -315,9 +314,9 @@
 
     let time = Math.round(1500 / sortList.length / 2);
     sortList.sort((a, b) => {
-      if(a.flatness < b.flatness){
+      if(a.sortingCritera < b.sortingCritera){
         return 1;
-      } else if (a.flatness > b.flatness){
+      } else if (a.sortingCritera > b.sortingCritera){
         return -1;
       }
       if(a.height < b.height){
