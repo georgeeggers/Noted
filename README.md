@@ -34,6 +34,11 @@ npm run tauri build
 ```
 This should generate an executable installer that you can use to install the app!
 # Features
+
+## User Guide
+
+For a more comrehensive list of features and how to use them, check out the [user guide](https://github.com/georgeeggers/Noted/blob/master/USER_GUIDE.md)
+
 ## Saving boards
 Save boards to a local machine using a SQLite database, or to a self-hostable server using PocketBase
 
