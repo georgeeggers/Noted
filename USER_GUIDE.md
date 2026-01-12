@@ -63,15 +63,43 @@ Attempting to return to the main menu with unsaved changed will display an alert
 
 <img width="640" height="400" alt="Screenshot 2025-12-11 at 8 57 45 PM" src="https://github.com/user-attachments/assets/cae61a37-a9c0-4c25-aa0f-be305b54fdad" />
 
+## Node Types
+
+### Text Node
+
+The text node is the most basic of all the nodes. It simply consists of a title, and a body, where you can type and text you want. In addition, typing triple backticks will create an inline code box, allowing you to format and easily copy a specific command
+
+<img width="568" height="349" alt="image" src="https://github.com/user-attachments/assets/c05b22c2-858d-4ef2-9b92-45f139654046" />
+
+### Todo Node
+
+The todo node provides an easy to use recursive system for todo lists. Pressing the plus icon marked new will add a new item to the list. Pressing the plus icon next to an item will turn it into a list, letting you stack more items under it. Pressing the X button will remove an item. To mark an item as complete, simply click the cirle to its left!
+
+<img width="581" height="328" alt="image" src="https://github.com/user-attachments/assets/2b146b1e-2277-4535-a34d-3c697438f9d1" />
+
+### Image Node
+
+The image node does exactly what it sounds like. It stores and displays an image. Press the upload button to select an image for the first time, or click an already existing image while in edit mode to change the display.
+
+<img width="722" height="522" alt="image" src="https://github.com/user-attachments/assets/09ff2c21-f9c0-4fd1-ba7a-9af55aa2db6d" />
+
+### File Node
+
+The file node works similarly to the image node, with one key difference. You can store files of any type. This is particularly useful when coupled with a self-hosted server, as it lets you share larger files across devices! You can easily download the files stored by pressing the download button in the control bar at the bottom of each File Node.
+
+<img width="448" height="223" alt="image" src="https://github.com/user-attachments/assets/6258142f-a350-4f59-97c4-f7237e235fe0" />
+
 ## Shortcuts
 
-Control + r will sort and organize nodes. The gap size between sorted notes can be configured in settings. 
+When in the board UI, several shortcuts can be used to speed up your workflow. They are as follows.
 
-Control + = will zoom in. 
+* Control + r will sort and organize nodes. The gap size between sorted notes can be configured in settings. 
 
-Control + - will zoom out 
+* Control + = will zoom in. 
 
-Control + s will save the board.
+* Control + - will zoom out 
+
+* Control + s will save the board.
 
 ## Settings
 
