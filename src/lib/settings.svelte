@@ -15,7 +15,7 @@
         await saveSettings();
     }
 
-
+    const widths = [500, 750, 1000, 99999];
 
     $effect(() => {
         changeUrl(settings.url)
@@ -85,6 +85,21 @@
                 <DropdownSelector stickLeft={false} options={gaps} bind:selected={settings.gap} displayFunc={(a) => {return `${a}px`}} callbackFunc={save}/>
             </div>
 
+            <div class="subSetting">
+                <div class="text">
+                    <p class='settingName'>Node Width</p>
+                    <p>Controls the maximum width of non-image nodes</p>
+                </div>
+                <DropdownSelector stickLeft={false} options={widths} bind:selected={settings.noteWidth} displayFunc={(a) => {return `${a}px`}} callbackFunc={save}/>
+            </div>
+
+            <div class="subSetting">
+                <div class="text">
+                    <p class='settingName'>Image Width</p>
+                    <p>Controls the maximum width of image nodes</p>
+                </div>
+                <DropdownSelector stickLeft={false} options={widths} bind:selected={settings.imageWidth} displayFunc={(a) => {return `${a}px`}} callbackFunc={save}/>
+            </div>
 
             <div class="subSetting">
                 <div class="text">

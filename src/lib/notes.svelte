@@ -239,6 +239,15 @@
     }
   }
 
+  const copyCode = async (data) => {
+    try {
+      await navigator.clipboard.writeText(data);
+      addNotification("Copied To Clipboard", "var(--input-color);", Copy, 4000, "yay")
+    } catch (error) {
+      console.error('Failed to copy text: ', error);
+    }
+  }
+
   let alertUnsaved = $state(false);
 
   const goBack = () => {
@@ -413,8 +422,25 @@
       }
       temp = [];
     }
+  }
 
+  const parseText = (input) => {
+    const data = input.split("\`\`\`");
+    let output = []
+    let codeSwitcher = false;
 
+    for(let i of data){
+      if(codeSwitcher){
+        output.push({type: "code", value: i.trim()});
+      } else {
+        output.push({type: "text", value: i});
+      }
+      codeSwitcher = !codeSwitcher;
+    }
+    
+    console.log(output);
+
+    return output
   }
 
 </script>
@@ -495,7 +521,22 @@
           {#if n.editing}
               <Textarea placeholder="Content" bind:value={n.content} fontSize={20} padding={0}/>
           {:else}
-              <p>{n.content}</p>
+                {#each parseText(n.content) as chunk}
+                  {#if chunk.type == "text"}
+                  <p>
+                    {chunk.value}
+                  </p>
+
+                  {:else}
+                    <div class="code" style="{selected == i ? "background-color: var(--light-bg-color);" : "var(--bg-color);"}">
+                      {chunk.value}
+
+                      <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => copyCode(chunk.value)}>
+                        <Copy size={20} />
+                      </button> 
+                    </div>
+                  {/if}
+                {/each}
           {/if}
 
         {:else if n.type == 'image'}
@@ -926,4 +967,21 @@
     color: var(--header-color);
     text-align: center;
   }
+
+  .code {
+    font-style: normal;
+    color: var(--header-color);
+    background-color: var(--bg-color);
+    box-sizing: border-box;
+    padding: 5px 10px;
+    display: flex;
+    font-size: calc(16px + var(--font-size-modifier));
+    border-radius: 5px;
+    border: 1px solid var(--lightest-bg-color);
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    white-space: pre-wrap;
+  }
+
 </style>
