@@ -69,13 +69,13 @@ You may notice the pen icon on the bottom of each node is highlighted green. Thi
 
 ### Exiting
 
-To return to the main menu, press the board name in the top right of the screen. However, if you have unsaved changes, a dot will appear. 
+To return to the main menu, press the escape key, or the board name in the top right of the screen. While editing your board, a dot will appear next to the board name if you have unsaved changes.
 
 <img width="221" height="53" alt="Screenshot 2025-12-11 at 8 56 28 PM" src="https://github.com/user-attachments/assets/6d591b3b-6669-483f-a4ed-45492854c871" />
 
 ### Saving
 
-Attempting to return to the main menu with unsaved changed will display an alert. This is a completely valid way to save, but you can also press Control + S to save at any time.
+Attempting to return to the main menu with unsaved changed will display an alert. From here, you can choose to save or discard changes. Alternatively, press Control + S to save at any time.
 
 <img width="640" height="400" alt="Screenshot 2025-12-11 at 8 57 45 PM" src="https://github.com/user-attachments/assets/cae61a37-a9c0-4c25-aa0f-be305b54fdad" />
 
@@ -83,7 +83,7 @@ Attempting to return to the main menu with unsaved changed will display an alert
 
 ### Text Node
 
-The text node is the most basic of all the nodes. It simply consists of a title, and a body, where you can type and text you want. In addition, typing triple backticks will create an inline code box, allowing you to format and easily copy a specific command
+The text node is the most basic of all the nodes. It simply consists of a title, and a body, where you can type any text you want. In addition, typing triple backticks will create an inline code box, allowing you to format and easily copy a specific command
 
 <img width="568" height="349" alt="image" src="https://github.com/user-attachments/assets/c05b22c2-858d-4ef2-9b92-45f139654046" />
 
