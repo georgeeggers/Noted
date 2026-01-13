@@ -18,11 +18,27 @@ Prexisting boards will be displayed underneath the search bar. You can use the s
 
 <img width="640" height="400" alt="Screenshot 2025-12-11 at 9 04 26 PM" src="https://github.com/user-attachments/assets/7d71817f-dc8b-4a09-a547-b123d2a71f8b" />
 
-### Deleting Boards
+## Board Menu
 
-If you ever want to delete a board, right click it's name, and a popup will appear giving you the option to delete it.
+Right clicking on a board will open up a context menu, where you can do a number of actions.
 
-<img width="640" height="400" alt="Screenshot 2025-12-11 at 9 07 01 PM" src="https://github.com/user-attachments/assets/e7a4ac37-9bec-4946-8252-f7234a0ad8d9" />
+<img width="640" height="400" alt="Screenshot 2026-01-12 at 11 54 13 PM" src="https://github.com/user-attachments/assets/a0a816ea-70be-4018-88ce-306b16619db5" />
+
+### Renaming
+
+Clicking the rename button will turn it into a text box where you can input the new name of your board. Pressing enter will update it to it's new name!
+
+<img width="280" height="233" alt="Screenshot 2026-01-12 at 11 57 22 PM" src="https://github.com/user-attachments/assets/d306c553-8dbe-4b35-98d0-31fdd5ad5a72" />
+
+### Duplicating
+
+Clicking the duplicate button will create a copy of a board, and all of the nodes associated with it. Due to technical issues from pocketbase, duplicating cloud boards is currently unavailable
+
+<img width="431" height="50" alt="Screenshot 2026-01-12 at 11 58 01 PM" src="https://github.com/user-attachments/assets/7e5694de-44dc-4728-9c9e-5e8ec159f5d8" />
+
+### Deleting
+
+Pretty self explanatory. Clicking the delete button will delete that board and all of the data associated with it. This is irreversible, so definitely be careful.
 
 ## Board UI
 
