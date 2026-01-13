@@ -94,12 +94,18 @@ export const loadLocal = async (id) => {
         i.handle = null;
         nodes.push(i);
     }
+
 }
 
 export const deleteAllLocal = async () => {
     const db = await Database.load("sqlite:data.db");
-    const result = await db.execute(
-        "DELETE FROM data WHERE type = 'image' OR type = 'file'"
+
+    let result = await db.execute(
+        "DELETE FROM boards"
+    )
+
+    result = await db.execute(
+        "DELETE FROM data"
     );
 }
 
@@ -123,7 +129,6 @@ export const loadBoards = async () => {
         }
 
     }
-
 
 
     return result;
@@ -182,7 +187,7 @@ export const loadServer = async (id) => {
         if (i.type == "image" || i.type == "file"){
             i.file = pb.files.getURL(i, i.file);
         } else if (i.type == "todo"){
-            i.content = JSON.parse(i.content);
+            i.content = i.todo;
         }
         i.handle = null;
         nodes.push(i);
@@ -196,6 +201,10 @@ export const saveServer = async (id) => {
         if(i.action == "delete"){
             const result = await pb.collection('data').delete(i.node.id);
         } else if (i.action == "create"){
+            if(i.node.type == "todo"){
+                i.node.todo = i.node.content;
+            }
+
             const result = await pb.collection('data').create(i.node);
         } else if (i.action == 'update'){
             if(i.node.type == "image" || i.node.type == "file"){
@@ -206,6 +215,8 @@ export const saveServer = async (id) => {
                     i.node.file = thing;
                     continue
                 }
+            } else if(i.node.type == "todo"){
+                i.node.todo = i.node.content;
             }
             const result = await pb.collection('data').update(i.node.id, i.node);
         }
@@ -216,8 +227,76 @@ export const saveServer = async (id) => {
 
 export const makeServerBoard = async (name) => {
     await pb.collection('boards').create({boardName: name});
-    
     await loadBoards();
 }
 
+
+export const duplicateLocal = async (id, newName) => {
+    try {
+        // iterate through given board to get a dif-array
+        let temp = [];
+        const db = await Database.load("sqlite:data.db");
+        const result = await db.select("SELECT * FROM data WHERE boardID = $1", [id]);
+        for(let i of result){
+            if(i.type == "image" || i.type == "file"){
+                if(i.file != null){
+                    // im lokenuinely foolish for parsing the b64 by looking for spaces
+                    // highkey forgot that file names could have spaces
+                    // solution is such a hack but it works so i dont care
+                    let parts = i.file.split(' ');
+                    const bytes = atob(parts[parts.length - 1]);
+                    const byteArray1 = [];
+                    for (let i = 0; i < bytes.length; i++) {
+                        const byte = bytes.charCodeAt(i);
+                        byteArray1.push(byte);
+                    }
+                    const byteArray = new Uint8Array(byteArray1);
+                    i.file = new Blob([byteArray]);
+                    i.file.name = parts[0];
+                }
+
+            } else if (i.type == "todo"){
+                i.content = JSON.parse(i.content);
+            }
+            i.handle = null;
+            temp.push(i);
+        }
+
+
+        const newId = getID();
+        const newResponse = await db.execute("INSERT into boards (id, boardType, boardName) VALUES ($1, $2, $3)", [newId, "local", newName]);
+        appState.boards.push({id: newId, boardType: "local", boardName: newName});
+
+        for(let i of temp){
+            let file = await toBase64(i.file);
+            let content;
+            if(i.type == 'todo'){
+                content = JSON.stringify(i.content);
+            } else {
+                content = i.content;
+            }
+            const result = await db.execute(
+                'INSERT into data (id, boardID, x, y, type, title, content, file, editing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+                [getID(), newId, i.x, i.y, i.type, i.title, content, file, i.editing ? 1 : 0]
+            );
+        }
+
+        return true;
+    } catch (e) {
+        console.log(e);
+        // return a false if error :(
+        return false;
+    }
+}
+
+export const changeNameLocal = async (b, newName) => {
+    const db = await Database.load("sqlite:data.db");
+    const result = await db.execute("UPDATE boards SET boardType = $2, boardName = $3 WHERE id = $1", [b.id, "local", newName]);
+    b.boardName = newName
+}
+
+export const changeNameServer = async (b, newName) => {
+    b.boardName = newName;
+    const result = await pb.collection('boards').update(b.id, b);
+}
 

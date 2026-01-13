@@ -118,6 +118,8 @@
       if(zoomIndex != levels.length - 1){
         zoomIndex++;
       }
+    } else if ((e.key === "Escape")) {
+      goBack();
     }
   }
 
@@ -438,8 +440,6 @@
       codeSwitcher = !codeSwitcher;
     }
     
-    console.log(output);
-
     return output
   }
 
@@ -502,7 +502,7 @@
       <div class="node {settings.animations ? "anim" : ""}" style='
         transform: translate({n.x}px, {n.y}px);
         {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2; border: 1px solid var(--lightest-bg-color);": ""} 
-        max-width: {n.type == "image" ? settings.imageWidth : (n.type == "note" ? settings.noteWidth : "1000000")}px;'
+        max-width: {n.type == "image" ? settings.imageWidth : settings.noteWidth}px;'
         transition:scale={{ duration: settings.animations ? 250 : 0 }}
         onmousedown={() => focusNode(i)}
         ontouchstart={(e) => focusNode(i)}
@@ -528,7 +528,7 @@
                   </p>
 
                   {:else}
-                    <div class="code" style="{selected == i ? "background-color: var(--light-bg-color);" : "var(--bg-color);"}">
+                    <div class="code {settings.animations ? "anim" : ""} {!settings.overrideCodeFont ? "monospace" : ""}" style="{selected == i ? "background-color: var(--light-bg-color);" : "var(--bg-color);"}">
                       {chunk.value}
 
                       <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => copyCode(chunk.value)}>
@@ -668,42 +668,28 @@
     transition:fade={{ duration: settings.animations ? 250 : 0 }}
     for="closePopup"
   >
-
-    <div class="unsavedAlert"
-      transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
-    >
-      <p>You have unsaved changes!</p>
-      <div class="buttons">
-        <button onclick={saveAndCont} style='width: fit-content;' class='{settings.animations ? "anim" : ""}'>
-          <CheckCircle size={20} />
-          Save
-        </button>
-        <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;' class='{settings.animations ? "anim" : ""}'>
-          <CircleX size={20} />
-          Discard
-        </button>
-      </div>
-    </div>
-
   </label>
+
+  <div class="unsavedAlert"
+    transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
+  >
+    <p>You have unsaved changes!</p>
+    <div class="buttons">
+      <button onclick={saveAndCont} style='width: fit-content;' class='{settings.animations ? "anim" : ""}'>
+        <CheckCircle size={20} />
+        Save
+      </button>
+      <button onclick={quitNoSave} style='background-color: var(--fail-color) !important; border: none !important;' class='{settings.animations ? "anim" : ""}'>
+        <CircleX size={20} />
+        Discard
+      </button>
+    </div>
+  </div>
+
 
 {/if}
 
 <style>
-
-  .blocker {
-    width: 100vw;
-    height: 100vh;
-    background-color: #00000040;
-    backdrop-filter: blur(5px);
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 
   .buttons {
     display: flex;
@@ -982,6 +968,14 @@
     justify-content: space-between;
     gap: 10px;
     white-space: pre-wrap;
+  }
+
+  .code.anim {
+    transition: background-color .25s ease;
+  }
+
+  .monospace {
+    font-family: "Noto Monospace" !important;
   }
 
 </style>

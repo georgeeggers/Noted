@@ -93,7 +93,7 @@ const click = (a) => {
 
   .dropDown {
     width: fit-content;
-    height: 45px;
+    height: fit-content;
     padding: 10px;
     background-color: var(--lighter-bg-color);
     border-radius: var(--border-radius);

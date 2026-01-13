@@ -1,8 +1,8 @@
 <script>
-    import { loadBoards, deleteBoard, makeLocalBoard, makeServerBoard, deleteAllLocal } from "../backend.svelte";
+    import { loadBoards, deleteBoard, makeLocalBoard, makeServerBoard, deleteAllLocal, duplicateLocal, changeNameLocal, changeNameServer } from "../backend.svelte";
     import { onMount } from "svelte";
-    import { appState, customSlide, notifications, settings } from "../global.svelte";
-    import { Cloud, Laptop, LucideArrowLeft, PlusCircle, RefreshCcw, Settings2, Trash} from "@lucide/svelte";
+    import { addNotification, appState, customSlide, notifications, settings } from "../global.svelte";
+    import { Check, CircleX, Cloud, CopyPlus, Laptop, LucideArrowLeft, NfcIcon, PlusCircle, RefreshCcw, Settings2, TextCursor, Trash} from "@lucide/svelte";
     import { replace } from 'svelte-spa-router';
     import { fade, fly, slide } from "svelte/transition";
     import { flip } from "svelte/animate";
@@ -10,7 +10,6 @@
     let loading = $state(true);
 
     onMount(async () => {
-
         await loadBoards();
         loading = false;
     });
@@ -36,13 +35,13 @@
         await toBoard(appState.boards[appState.boards.length - 1]);
     }
 
-    let deleteHandler = $state(null);
+    let contextHandler = $state(null);
 
     const handleClick = (e, b, i) => {
         if(e.button == 0){
             toBoard(b);
         } else if (e.button == 2){
-            deleteHandler = b;
+            contextHandler = b;
         }
     }
 
@@ -52,6 +51,42 @@
         } else {
             makeBoard(false);
         }
+    }
+
+    let duplicating = $state(false);
+
+    const duplicateBoard = async(b) => {
+
+        if(duplicating){
+            return;
+        }
+        duplicating = true;
+        const result = await duplicateLocal(b.id, `${b.boardName}_2`);
+        if(result){
+            addNotification(`${b.boardName} Duplicated`, "var(--input-color)", CopyPlus, 4000, 'yay');
+        } else {
+            addNotification("Failed to duplicate", "var(--fail-color)", CircleX, 4000, 'error');
+        }
+        contextHandler = null;
+        renaming = false;
+        newName = "";
+
+        duplicating = false;
+    }
+
+    let renaming = $state(false);
+    let newName = $state("");
+
+    const renameBoard = async(b, name) => {
+        if(b.boardType){
+            await changeNameLocal(b, name);
+        } else {
+            await changeNameServer(b, name);
+        }
+
+        contextHandler = null;
+        newName = "";
+        renaming = false;
     }
 
 </script>
@@ -138,31 +173,62 @@
         </div>
     </div>
 
-    <button class='invis' id='closeDelete' onclick={() => {deleteHandler = null}}>Close Popup</button>
+    <button class='invis' id="closeContext" onclick={() => {contextHandler = null; renaming = false; newName = "";}}>Close Popup</button>
 
-    {#if deleteHandler != null}
+    {#if contextHandler != null}
         <label class="blocker"
             transition:fade={{ duration: settings.animations ? 250 : 0 }}
-            for='closeDelete'
+            for='closeContext'
         >
+        </label>
 
         <div class="unsavedAlert"
             transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
         >
-            <p>Delete Board?</p>
-            <div class="buttons">
-            <button onclick={() => {deleteHandler = null}}>
-                <LucideArrowLeft size={20} />
-                Back
-            </button>
-            <button onclick={() => {deleteBoard(deleteHandler); deleteHandler = null}} style='background-color: var(--fail-color) !important; border: none !important;'>
-                <Trash size={20} />
-                Delete
-            </button>
+            <p>{contextHandler.boardName}</p>
+            <div class="buttons buttons2">
+
+
+                {#if renaming}
+                    <input type="text" bind:value={newName} placeholder="New Name..." onkeydown={(e) => e.key == "Enter" && renameBoard(contextHandler, newName)}>
+                {:else}
+                    <button onclick={() => {renaming = true;}}>
+                        <TextCursor size={20} />
+                        Rename
+                    </button>
+                {/if}
+                {#if contextHandler.boardType}
+                    <button onclick={() => duplicateBoard(contextHandler)}>
+                        {#if !duplicating}
+
+                                <CopyPlus size={20} />
+                                Duplicate
+                        {:else}
+                            <div class="iconWrapper spin">
+                                <RefreshCcw size=20 />
+                            </div>
+                        {/if}
+                    </button>
+                {/if}
+                <!--
+                    {#if settings.doServer}
+                        <button onclick={() => {contextHandler = null}}>
+                            {#if contextHandler.boardType}
+                                <Cloud size={20} />
+                                Copy To Cloud
+                            {:else}
+                                <Laptop size={20} />
+                                Copy To Local
+                            {/if}
+                        </button>
+                    {/if}
+                -->
+                <button onclick={() => {deleteBoard(contextHandler); contextHandler = null; renaming = false; newName = "";}} style='background-color: var(--fail-color) !important; border: none !important;'>
+                    <Trash size={20} />
+                    Delete
+                </button>
             </div>
         </div>
-
-        </label>
 
     {/if}
 
@@ -173,24 +239,24 @@
             transition:fade={{ duration:  settings.animations ? 250 : 0 }}
             for='closeCreate'
         >
-
-            <div class="unsavedAlert"
-                transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
-            >
-                <p>Local Or Server</p>
-                <div class="buttons">
-                    <button onclick={() => makeBoard(false)}>
-                        <Laptop size={20} />
-                        Local
-                    </button>
-                    <button onclick={() => makeBoard(true)}>
-                        <Cloud size={20} />
-                        Server
-                    </button>
-                </div>
-            </div>
-
         </label>
+
+        <div class="unsavedAlert"
+            transition:fly={{ x: 50, duration: settings.animations ? 250 : 0 }}
+        >
+            <p>Local Or Server</p>
+            <div class="buttons">
+                <button onclick={() => makeBoard(false)}>
+                    <Laptop size={20} />
+                    Local
+                </button>
+                <button onclick={() => makeBoard(true)}>
+                    <Cloud size={20} />
+                    Server
+                </button>
+            </div>
+        </div>
+
 
     {/if}
 
@@ -198,6 +264,11 @@
 </div>
 
 <style>
+
+    .buttons2 {
+        flex-direction: column;
+    }
+
     .button {
         background-color: var(--lighter-bg-color);
         border: none;
@@ -212,6 +283,23 @@
         gap: 7px;
         cursor: pointer;
         border: 1px solid var(--lightest-bg-color);
+    }
+
+    .buttons input {
+        width: 100%;
+        background-color: var(--lighter-bg-color);
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        border-radius: var(--border-radius);
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color .25s ease;
+        color: var(--text-color);
+        font-size: calc(14px + var(--font-size-modifier));
+        border: 1px solid var(--lightest-bg-color);
+        outline: none !important;
     }
 
     .button.anim {
@@ -338,20 +426,6 @@
         .searchBar input {
             font-size: calc(12px + var(--font-size-modifier));
         }
-    }
-
-    .blocker {
-        width: 100vw;
-        height: 100vh;
-        background-color: #00000040;
-        backdrop-filter: blur(5px);
-        position: fixed;
-        left: 0px;
-        top: 0px;
-        z-index: 100;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
 </style>

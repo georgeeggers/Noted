@@ -1,12 +1,12 @@
 <script>
     import { replace } from "svelte-spa-router";
-    import { ArrowLeft, CheckCircle,Moon, RefreshCcw, Sun } from "@lucide/svelte";
+    import { ArrowLeft, Moon, Sun } from "@lucide/svelte";
     import { loadTheme, saveSettings, settings, themes } from "../global.svelte";
     import DropdownSelector from "./modules/dropdownSelector.svelte";
     import Toggle from "./modules/toggle.svelte";
     import { changeUrl } from "../backend.svelte";
 
-    let fonts = ['Monospace', "Arial", "Roboto"];
+    let fonts = ['Noto Monospace', "Roboto", "Merriweather", "Gothic"];
     let fontSizes = ["Smaller", "Small", "Normal", "Big", "Bigger"];
     let borders = ["Square", "Squarcle", "Rounded", "Roundest"];
     let gaps = [0, 5, 10, 20, 50];
@@ -59,7 +59,14 @@
                     <p>Controls the size of the text across the app</p>
                 </div>
                 <DropdownSelector stickLeft={false} options={fontSizes} bind:selected={settings.fontSize} callbackFunc={save}/>
+            </div>
 
+            <div class="subSetting">
+                <div class="text">
+                    <p class='settingName'>Override Code Font</p>
+                    <p>Determines if the chosen font should override the default monospace font for code blocks</p>
+                </div>
+                <Toggle bind:value={settings.overrideCodeFont} />
             </div>
 
         </div>

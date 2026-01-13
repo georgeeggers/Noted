@@ -90,6 +90,7 @@ const click = (a) => {
 
   .dropDown {
     width: fit-content;
+    height: fit-content;
     height: 45px;
     padding: 10px;
     background-color: var(--lighter-bg-color);

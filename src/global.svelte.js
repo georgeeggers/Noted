@@ -6,13 +6,14 @@ export let settings = $state({
     noteWidth: 500,
     imageWidth: 500,
     gap: 10,
-    fontSize: 'Normal',
-    font: "Monospace",
+    fontSize: 'Small',
+    font: "Noto Monospace",
     border: "Rounded",
     themeIndex: 0,
     animations: true,
     doServer: false,
-    url: ""
+    url: "",
+    overrideCodeFont: false,
 });
 
 export let notifications = $state([]);
