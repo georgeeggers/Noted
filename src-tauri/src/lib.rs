@@ -1,11 +1,8 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri::Manager;
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let migrations = vec![
@@ -24,6 +21,26 @@ pub fn run() {
     ];
 
     tauri::Builder::default()
+
+        .setup(|app| {
+            let main_webview = app.get_webview_window("main").unwrap();
+            main_webview.with_webview(|webview| {
+
+                #[cfg(target_os = "linux")]
+                {
+                    // see <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/struct.WebView.html>
+                    // and <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/trait.WebViewExt.html>
+                    use webkit2gtk::WebViewExt;
+                    webview.connect_context_menu(|_, _, _| {
+                        true // TRUE = stop menu
+                    });
+                }
+
+            });
+            Ok(())
+        })
+
+
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(
             tauri_plugin_sql::Builder::new()
@@ -32,7 +49,6 @@ pub fn run() {
         )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
