@@ -31,9 +31,7 @@ pub fn run() {
                     // see <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/struct.WebView.html>
                     // and <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/trait.WebViewExt.html>
                     use webkit2gtk::WebViewExt;
-                    webview.connect_context_menu(|_, _, _| {
-                        true // TRUE = stop menu
-                    });
+                    webview.connect_context_menu(|_, _, _, _| true);
                 }
 
             });
