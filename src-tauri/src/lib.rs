@@ -1,7 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 use tauri_plugin_sql::{Migration, MigrationKind};
-use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -21,24 +20,6 @@ pub fn run() {
     ];
 
     tauri::Builder::default()
-
-        .setup(|app| {
-            let main_webview = app.get_webview_window("main").unwrap();
-            main_webview.with_webview(|webview| {
-
-                #[cfg(target_os = "linux")]
-                {
-                    // see <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/struct.WebView.html>
-                    // and <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/trait.WebViewExt.html>
-                    use webkit2gtk::WebViewExt;
-                    webview.connect_context_menu(|_, _, _, _| true);
-                }
-
-            });
-            Ok(())
-        })
-
-
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(
             tauri_plugin_sql::Builder::new()
