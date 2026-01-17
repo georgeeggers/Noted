@@ -11,17 +11,17 @@
             value: false,
             content: ""
         })
-        updateDifByIndex(index, "update");
+        updateDifByIndex(index, "update", true);
     }
 
     const toggleData = (d) => {
         d.value = !d.value;
-        updateDifByIndex(index, "update");
+        updateDifByIndex(index, "update", true);
     }
 
     const deleteItem = (i) => {
         data.splice(i, 1);
-        updateDifByIndex(index, "update");
+        updateDifByIndex(index, "update", true);
     }
 
     const makeMulti = (d) => {
@@ -31,7 +31,7 @@
             value: false,
             content: ""
         }];
-        updateDifByIndex(index, "update");
+        updateDifByIndex(index, "update", true);
     }
 
 
