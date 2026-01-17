@@ -7,14 +7,8 @@ pub fn run() {
     let migrations = vec![
         Migration {
             version: 1,
-            description: "create_initial_tables",
-            sql: "CREATE TABLE data (id TEXT PRIMARY KEY, boardID TEXT, x INTEGER, y INTEGER, type TEXT, title TEXT, content TEXT, file TEXT, editing INTEGER);",
-            kind: MigrationKind::Up
-        },
-        Migration {
-            version: 2,
-            description: "create_boards",
-            sql: " CREATE TABLE boards (id TEXT PRIMARY KEY, boardType TEXT, boardName TEXT);",
+            description: "intialize_database",
+            sql: "CREATE TABLE data (id TEXT PRIMARY KEY, boardID TEXT, x INTEGER, y INTEGER, type TEXT, title TEXT, content TEXT, file TEXT, editing INTEGER); CREATE TABLE boards (id TEXT PRIMARY KEY, boardType TEXT, boardName TEXT); CREATE TABLE lines (id TEXT PRIMARY KEY, boardId TEXT, node1 TEXT, node2 TEXT, type INTEGER);",
             kind: MigrationKind::Up
         }
     ];

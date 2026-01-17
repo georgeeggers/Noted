@@ -94,6 +94,15 @@
 
             <div class="subSetting">
                 <div class="text">
+                    <p class='settingName'>Edge Finding</p>
+                    <p>When enabled, lines will draw from edge to edge, instead of the center of nodes. This may be more computationally intensive</p>
+                </div>
+                <Toggle bind:value={settings.edgeFinding} />
+            </div>
+
+
+            <div class="subSetting">
+                <div class="text">
                     <p class='settingName'>Node Width</p>
                     <p>Controls the maximum width of non-image nodes</p>
                 </div>

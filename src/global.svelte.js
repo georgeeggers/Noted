@@ -14,6 +14,7 @@ export let settings = $state({
     doServer: false,
     url: "",
     overrideCodeFont: false,
+    edgeFinding: false,
 });
 
 export let notifications = $state([]);
@@ -75,6 +76,7 @@ export let boards = $state([
 
 
 export let nodes = $state([]);
+export let lines = $state([]);
 
 export let appState = $state({
     selectedBoard: null,
@@ -91,11 +93,12 @@ export const updateDifByIndex = (index, action) => {
     updateDif(node, action);
 }
 
-export const updateDif = (node, action) => {
+export const updateDif = (node, action, isNode) => {
     if(action == "create"){
         difs.push({
             action: "create",
-            node: node
+            node: node,
+            isNode: isNode,
         })
     } else if (action == "update"){
         // search through data to see if the note was created. if so, we can just change it to a create, as the database wont care
@@ -108,9 +111,12 @@ export const updateDif = (node, action) => {
 
         difs.push({
             action: "update",
-            node: node
+            node: node,
+            isNode: isNode,
+
         })
     } else if (action == "delete"){
+        
         // if a node was just created or updated, we can remove those difs
 
         for(let i of difs){
@@ -129,7 +135,8 @@ export const updateDif = (node, action) => {
         }
         difs.push({
             action: 'delete',
-            node: node
+            node: node,
+            isNode: isNode,
         })
     }
 }

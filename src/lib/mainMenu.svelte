@@ -18,7 +18,6 @@
 
     let searchBoards = $derived(searchTerm == "" ? appState.boards : appState.boards.filter(m => m.boardName.toLowerCase().includes(searchTerm.toLowerCase())));
 
-
     const toBoard = async (b) => {
         appState.selectedBoard = b;
         replace('/notes');

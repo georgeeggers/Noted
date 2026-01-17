@@ -1,10 +1,10 @@
 <script>
   // this is a custom textarea like solution for lack of support on webkit and gekko
   import Textarea from './modules/textarea.svelte';
-  import { appState, getID, settings, nodes, updateDif, difs, createDebounce, notifications, customSlide, addNotification } from '../global.svelte';
+  import { appState, getID, settings, nodes, lines, updateDif, difs, createDebounce, notifications, customSlide, addNotification } from '../global.svelte';
   import { fade, fly, scale } from 'svelte/transition';
 
-  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric, FileCheck } from '@lucide/svelte';
+  import { Cloud, File, GripHorizontal, Image, Laptop, LayoutGrid, ListTodo, PencilLine, ScrollText, Settings2, Trash, CircleSmall, Upload, Download, Copy, CheckCircle, CircleX, Search, TruckElectric, FileCheck, ChevronRight, ArrowBigRight, MoveUpRight, Minus, MoveHorizontal, MoveRight, ChevronsRight, ChevronLeft, LucideArrowDown10 } from '@lucide/svelte';
   import { onDestroy, onMount } from 'svelte';
   import { loadLocal, loadServer, saveLocal, saveServer } from '../backend.svelte';
   import Todo from './modules/todo.svelte';
@@ -44,21 +44,42 @@
 
     nodes.push(n);
 
-    updateDif(n, "create");
+    updateDif(n, "create", true);
 
     selected = nodes.length - 1;
   }
 
   const toggleEdit = (n) => {
+    if(lineMode){
+      return;
+    }
     n.editing = !n.editing;
-    updateDif(n, "update");
+    updateDif(n, "update", true);
   }
 
   const deleteNode = (index) => {
+
+    if(lineMode){
+      return;
+    }
+
+    const node = nodes[index];
+
+
+    for(let i = 0; i < lines.length; i++){
+      const line = lines[i];
+
+      if(line.n2 == node || line.n1 == node){
+        deleteLine(line);
+        i--;
+      }
+    }
+
+
     let n = nodes.splice(index, 1);
     selected = -1;
 
-    updateDif(n[0], "delete");
+    updateDif(n[0], "delete", true);
   }
 
   // movement logic
@@ -82,8 +103,10 @@
   const globalMouseDown = (e) => {
     if (e.button == 2){
       e.preventDefault();
-      moveDrag = true;
-      document.addEventListener('mousemove', moveLogic);
+      if(dragging == null){
+        moveDrag = true;
+        document.addEventListener('mousemove', moveLogic);
+      }
     }
   }
 
@@ -92,6 +115,8 @@
     if(e.button == 2){
       moveDrag = false;
       document.removeEventListener('mousemove', moveLogic);
+    } else if (e.button == 0 && dragging != null){
+      endDragDesktop(e, dragging);
     }
   }
 
@@ -149,16 +174,34 @@
   })
 
   const focusNode = (index) => {
+    if(lineMode){
+      if(lineBuilder == null){
+        lineBuilder = nodes[index];
+      } else {
+
+        const temp = {id: getID(), n1: lineBuilder, n2: nodes[index], type: lineType, boardID: appState.selectedBoard.id};
+        if(testLine(temp)){
+          lines.push(temp);
+          updateDif(temp, "create", false);
+        }
+
+        lineBuilder = null;
+      }
+    }
     selected = index;
   }
 
+  let dragging = $state(null);
+
   const startDragDesktop = (e, n) => {
+    dragging = n;
     document.addEventListener('mousemove', dragLogicDesktop);
     offsetX = n.x - e.pageX;
     offsetY = n.y -  e.pageY;
   }
 
   const endDragDesktop = (e, n) => {
+    dragging = null;
     document.removeEventListener('mousemove', dragLogicDesktop);
     if(n.x < 0) {
       n.x = settings.gap;
@@ -166,8 +209,9 @@
     if(n.y < 0) {
       n.y = settings.gap;
     }
-
-    updateDif(n, "update");
+    if(!lineMode){
+      updateDif(n, "update", true);
+    }
   }
 
 
@@ -178,7 +222,7 @@
       e.preventDefault();
       n.file = e.dataTransfer.files[0];
     }
-    updateDif(n);
+    updateDif(n, "create", true);
   };
 
   const get_thumbnail = (file) => {
@@ -221,6 +265,11 @@
   }
 
   const copy = async (n) => {
+
+    if(lineMode){
+      return;
+    }
+
     try {
       let text = "";
       if(n.type == "note"){
@@ -237,7 +286,7 @@
       await navigator.clipboard.writeText(text);
       addNotification(text="Copied To Clipboard ", "var(--input-color);", Copy, 4000, "yay")
     } catch (error) {
-      console.error('Failed to copy text: ', error);
+      addNotification("Failed To Copy Text", "var(--fail-color)", CircleX, 4000, 'error');
     }
   }
 
@@ -246,7 +295,7 @@
       await navigator.clipboard.writeText(data);
       addNotification("Copied To Clipboard", "var(--input-color);", Copy, 4000, "yay")
     } catch (error) {
-      console.error('Failed to copy text: ', error);
+      addNotification("Failed To Copy Text", "var(--fail-color)", CircleX, 4000, 'error');
     }
   }
 
@@ -258,6 +307,7 @@
     } else {
       difs.length = 0;
       nodes.length = 0;
+      lines.length = 0;
       replace('/');
     }
   }
@@ -270,6 +320,7 @@
   const quitNoSave = () => {
     difs.length = 0;
     nodes.length = 0;
+    lines.length = 0;
     replace('/');
   }
 
@@ -323,7 +374,7 @@
       index++;
     }
 
-    let time = Math.round(1500 / sortList.length / 2);
+    let time = Math.round(750 / sortList.length);
     sortList.sort((a, b) => {
       if(a.sortingCritera < b.sortingCritera){
         return 1;
@@ -385,7 +436,7 @@
         itemLayers.push(currentLayer);
         currentLayer = [];
       }
-      updateDif(nodes[i.index], "update");
+      updateDif(nodes[i.index], "update", true);
       await sleep(time);
     }
     itemLayers.push(currentLayer);
@@ -415,7 +466,7 @@
           })
 
         }
-        updateDif(nodes[i.index], "update");
+        updateDif(nodes[i.index], "update", true);
         await(sleep(time));
       }
       borders.length = 0;
@@ -441,6 +492,136 @@
     }
     
     return output
+  }
+
+  let lineMode = $state(false);
+  let lineType = $state(0);
+  let lineBuilder = $state(null);
+
+  const testLine = (line) => {
+    if(line.n1 == line.n2) {
+      addNotification("Lines Must Connect To Unique Nodes", "var(--fail-color)", CircleX, 4000, 'error');
+      return false;
+    }
+
+    for(let i of lines){
+      if((line.n1 == i.n1 && line.n2 == i.n2) || (line.n1 == i.n2 && line.n2 == i.n1)){
+        i.type = lineType;
+        updateDif(i, "update", false);
+        return false
+      }
+    }
+    return true;
+  }
+
+  const findSideCoords = (n1, n2) => {
+    let ang1 = Math.atan2(n2.y - n1.y,  n2.x - n1.x)
+    // use above for intermediary calc
+    let ang = ang1 + (ang1 < 0 ? 2 * Math.PI : 0)
+    // thats the angle from 0 to 2pi from n1 to n2 (desmos makes their Math.atan2 func from -pi to pi so correct that)
+    
+    let n1tan = Math.atan2(n1.handle.offsetHeight, n1.handle.offsetWidth) // note the height and width need to be positive
+    let n2tan = Math.atan2(n2.handle.offsetHeight, n2.handle.offsetWidth) // ditto
+
+    let n1side, n2side; // init our vars ofc
+
+    if (-n1tan <= ang && ang < n1tan){
+      n1side = 0 // represents east
+    }  else if (n1tan <= ang  && ang < Math.PI - n1tan) {
+      n1side = 3 // represents north
+    } else if (Math.PI - n1tan <= ang  && ang < Math.PI + n1tan) {
+      n1side = 2 // represents west
+    }else if (Math.PI + n1tan <= ang && ang < 2 * Math.PI - n1tan) {
+      n1side = 1 // represents south
+    } else { n1side = 0 } // cheap fix to prevent that one bug i showed you
+
+    if (-n2tan <= ang && ang < n2tan){
+      n2side = 2 // represents west
+    } else if (n2tan <= ang && ang < Math.PI - n2tan) {
+      n2side = 1 // represents south
+    } else if (Math.PI - n2tan <= ang && ang < Math.PI + n2tan){
+      n2side = 0 // represents east
+    } else if (Math.PI + n2tan <= ang && ang < 2 * Math.PI - n2tan) {
+      n2side = 3 // represents north
+    } else {
+      n2side = 2 // cheap fix to prevent that one bug i showed you
+    }
+     
+    // actually calculate the coordinates
+
+    let x1, x2, y1, y2;
+
+    if(n1side == 0){
+      // east
+      x1 = n1.x + n1.handle.offsetWidth;
+      y1 = n1.y + n1.handle.offsetHeight / 2;
+    } else if (n1side == 1){
+      // north
+      x1 = n1.x + n1.handle.offsetWidth / 2;
+      y1 = n1.y;
+    } else if (n1side == 2){
+      // west
+      x1 = n1.x;
+      y1 = n1.y + n1.handle.offsetHeight / 2;
+    } else {
+      // south
+      x1 = n1.x + n1.handle.offsetWidth / 2;
+      y1 = n1.y + n1.handle.offsetHeight;
+    }
+    
+    // same for the second node
+
+    if(n2side == 0){
+      // east
+      x2 = n2.x + n2.handle.offsetWidth;
+      y2 = n2.y + n2.handle.offsetHeight / 2;
+    } else if (n2side == 1){
+      // north
+      x2 = n2.x + n2.handle.offsetWidth / 2;
+      y2 = n2.y;
+    } else if (n2side == 2){
+      // west
+      x2 = n2.x;
+      y2 = n2.y + n2.handle.offsetHeight / 2;
+    } else {
+      // south
+      x2 = n2.x + n2.handle.offsetWidth / 2;
+      y2 = n2.y + n2.handle.offsetHeight;
+    }
+
+    return {x1: x1, x2: x2, y1: y1, y2: y2};
+  }
+
+  const findCenterCoords = (n1, n2) => {
+    const x1 = n1.x + (n1.handle.offsetWidth / 2);
+    const x2 = n2.x + (n2.handle.offsetWidth / 2);
+    const y1 = n1.y + (n1.handle.offsetHeight / 2);
+    const y2 = n2.y + (n2.handle.offsetHeight / 2);
+
+    return {x1: x1, x2: x2, y1: y1, y2: y2};
+  }
+
+  const getLineWidth = (c) => {
+    // distance formula
+    let side1 = Math.ceil(c.x2 - c.x1);
+    let side2 = Math.ceil(c.y2 - c.y1);
+    return Math.abs(Math.ceil(Math.sqrt((side1 * side1) + (side2 * side2))));
+  }
+
+  const getAngle = (c) => {
+    // get the angle
+    let result = ((Math.atan2(c.y2 - c.y1, c.x2 - c.x1)) * (180 / Math.PI));
+    return result
+  }
+
+  const toggleLineMode = () => {
+    lineMode = !lineMode;
+    lineBuilder = null;
+  }
+
+  const deleteLine = (l) => {
+    updateDif(l, "delete", false);
+    lines.splice(lines.indexOf(l), 1);
   }
 
 </script>
@@ -487,11 +668,78 @@
 
 <a id='linkManager' class='invis'>Link Manager</a>
 
+
 <div class="globalArea" style="
   zoom: {1 / zoomLevel};
 ">
 
   <div class="mainArea">
+
+    {#each lines as l, _ (l.n1.id + l.n2.id)}
+      {@const c = settings.edgeFinding ? findSideCoords(l.n1, l.n2) : findCenterCoords(l.n1, l.n2)}
+      {@const width = getLineWidth(c)}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div 
+        class="line {lineMode ? "cuttable" : ""} {settings.animations ? "anim" : ""}" 
+        style="
+          width: {width}px;
+          {l.type == 3 ? "background-color: #00000000;": ""}
+          transform: translateX({c.x1}px) translateY({c.y1}px) rotate({getAngle(c)}deg);
+          "
+        transition:scale={{ duration: settings.animations ? 250 : 0 }}
+        onclick={() => lineMode ? deleteLine(l) : () => {}}
+      >
+        {#if l.type == 1}
+
+          {#each {length: Math.ceil(width) / 100} as _}
+            <div class="iconWrapper">
+            </div>
+              <div class="iconWrapper">
+                <ChevronRight size=40 />
+              </div>
+            <div class="iconWrapper">  
+            </div>
+          {/each}
+
+        {:else if l.type == 2}
+
+          {#each {length: Math.ceil(width / 2) / 100} as _}
+            <div class="iconWrapper">
+            </div>
+              <div class="iconWrapper">
+                <ChevronLeft size=40 />
+              </div>
+            <div class="iconWrapper">  
+            </div>
+          {/each}
+
+          {#each {length: Math.ceil(width / 2) / 100} as _}
+            <div class="iconWrapper">
+            </div>
+              <div class="iconWrapper">
+                <ChevronRight size=40 />
+              </div>
+            <div class="iconWrapper">  
+            </div>
+          {/each}
+
+        {:else if l.type == 3}
+
+          {#each {length: Math.ceil(width) / 50} as _}
+            <div class="iconWrapper">
+            </div>
+              <div class="iconWrapper">
+                <ChevronRight size=40 />
+              </div>
+            <div class="iconWrapper">  
+            </div>
+          {/each}
+
+        {/if}
+      </div>
+
+    {/each}
 
     {#each nodes as n, i (n.id)}
 
@@ -499,7 +747,7 @@
 
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="node {settings.animations ? "anim" : ""}" style='
+      <div class="node {settings.animations ? "anim" : ""} {lineBuilder == n ? "lineSelected" : ""}" style='
         transform: translate({n.x}px, {n.y}px);
         {selected == i ? "background-color: var(--lighter-bg-color); z-index: 2; border: 1px solid var(--lightest-bg-color);": ""} 
         max-width: {n.type == "image" ? settings.imageWidth : settings.noteWidth}px;'
@@ -601,27 +849,27 @@
         {/if}
         
         <span class="controlBar">
-          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => toggleEdit(n)} style="{n.editing ? "color: var(--light-main-color); !important" : ""}">
+          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => toggleEdit(n)} style="{lineMode ? "color: var(--text-color) !important;": n.editing ? "color: var(--light-main-color); !important" : ""}" >
             <PencilLine size={20} />
           </button>
 
-          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => deleteNode(i)}>
+          <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => deleteNode(i)} style="{lineMode ? "color: var(--text-color) !important;" : ""}">
             <Trash size={20} />
           </button>
 
           {#if n.type == "file" || n.type == "image"}
-            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => download(n)}>
+            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => download(n)} style="{lineMode ? "color: var(--text-color) !important;" : ""}">
               <Download size={20} />
             </button>
           {:else}
-            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => copy(n)}>
+            <button class="controlButton {settings.animations ? "anim" : ""}" onclick={() => copy(n)} style="{lineMode ? "color: var(--text-color) !important;" : ""}">
               <Copy size={20} />
             </button>
           {/if}
 
           <button class='controlButton {settings.animations ? "anim" : ""}' draggable="false" 
+            style="{lineMode ? "color: var(--text-color) !important;" : ""}"
             onmousedown={(e) => startDragDesktop(e, n)}
-            onmouseup={(e) => endDragDesktop(e, n)}
           >
             <GripHorizontal size={20} ondragstart={(e) => e.preventDefault()} />
           </button>
@@ -637,27 +885,66 @@
 </div>
 
 <div class="nodeSelector">
-  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("note")}>
-    <ScrollText size={24} />
-  </button>
 
-  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("todo")}>
-    <ListTodo size={24} />
-  </button>
+  {#if !lineMode}
 
-  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("image")}>
-    <Image size={24} />
-  </button>
+    <div class="nodeSelectorButtons"
+      transition:fly={{y: -50, duration: settings.animations ? 250 : 0}}
+    >
+        <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("note")}>
+          <ScrollText size={24} />
+        </button>
 
-  <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("file")}>
-    <File size={24} />
-  </button>
+        <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("todo")}>
+          <ListTodo size={24} />
+        </button>
 
-  <div class="spacer"></div>
+        <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("image")}>
+          <Image size={24} />
+        </button>
 
-  <button class='{settings.animations ? "anim" : ""}' onclick={sort}>
-    <LayoutGrid size={24}/>
-  </button>
+        <button class='{settings.animations ? "anim" : ""}' onclick={() => addNode("file")}>
+          <File size={24} />
+        </button>
+
+        <div class="spacer"></div>
+
+        <button class='{settings.animations ? "anim" : ""}' onclick={toggleLineMode}>
+          <MoveUpRight size={24}/>
+        </button>
+
+    </div>
+
+    {:else}
+
+    <div class="nodeSelectorButtons"
+      transition:fly={{y: 50, duration: settings.animations ? 250 : 0}}
+    >
+        <button class='{settings.animations ? "anim" : ""}' style="{lineType == 0 ? "color: var(--light-main-color);": ""}" onclick={() => {lineType = 0}}>
+          <Minus size={24} />
+        </button>
+
+        <button class='{settings.animations ? "anim" : ""}' style="{lineType == 1 ? "color: var(--light-main-color);": ""}" onclick={() => {lineType = 1}}>
+          <MoveRight size={24} />
+        </button>
+
+        <button class='{settings.animations ? "anim" : ""}' style="{lineType == 2 ? "color: var(--light-main-color);": ""}" onclick={() => {lineType = 2}}>
+          <MoveHorizontal size={24} />
+        </button>
+
+        <button class='{settings.animations ? "anim" : ""}' style="{lineType == 3 ? "color: var(--light-main-color);": ""}" onclick={() => {lineType = 3}}>
+          <ChevronsRight size={24} />
+        </button>
+
+        <div class="spacer"></div>
+
+        <button class='{settings.animations ? "anim" : ""}' onclick={toggleLineMode}>
+          <LayoutGrid size={24}/>
+        </button>
+
+    </div>
+
+  {/if}
 
 </div>
 
@@ -732,7 +1019,7 @@
 
   .hover.anim {
     transition: 
-      250ms ease
+      .25s ease
     ;
   }
 
@@ -791,10 +1078,6 @@
     transition: color .25s ease;
   }
 
-  .nodeSelector {
-    border: 1px solid var(--lightest-bg-color);
-  }
-
   .nodeSelector button:hover {
     color: var(--main-color);
   }
@@ -824,13 +1107,11 @@
   }
 
   .nodeSelector {
-    width: fit-content;
     box-sizing: border-box;
     background-color: var(--input-color);
-    height: fit-content;
     position: fixed;
     z-index: 10;
-
+    border: 1px solid var(--lightest-bg-color);
     backdrop-filter: blur(5px);
 
     bottom: 50px;
@@ -838,14 +1119,27 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: var(--border-radius);
     left: 50%;
     transform: translate(-50%);
-    gap: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
+
     color: var(--header-color);
+    width: 263px; /* such a hack but it works */
+    height: 46px;
+  }
+
+  .nodeSelectorButtons {
+    gap: 20px;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    width: fit-content;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
   }
 
   .globalArea {
@@ -896,9 +1190,9 @@
 
   .node.anim {
     transition: 
-      background-color 250ms,
-      border-radius 250ms,
-      scale 500ms
+      background-color .25s,
+      border-radius .250s,
+      scale .5s,
     ;
   }
 
@@ -977,5 +1271,45 @@
   .monospace {
     font-family: "Noto Monospace" !important;
   }
+
+  
+  .line {
+    position: absolute;
+    height: 3px;
+    border-radius: 50px;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    background-color: var(--header-color);
+    transform-origin: left center;
+    justify-content: space-between;
+  }
+
+  .line.anim, .line.anim * {
+    transition: background-color .25s, height .25s, color .25s;
+  }
+
+  .line .iconWrapper {
+    max-height: 40px;
+  }
+
+  .lineSelected {
+    outline: 2px solid var(--header-color) !important;
+  }
+
+  .cuttable {
+    height: 6px;
+    cursor: pointer;
+  }
+
+  .cuttable:hover {
+    background-color: var(--light-main-color);
+    color: var(--light-main-color);
+  }
+
+  .cuttable:hover .iconWrapper {
+    color: var(--light-main-color);
+  }
+
 
 </style>
