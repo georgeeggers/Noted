@@ -222,7 +222,7 @@
       e.preventDefault();
       n.file = e.dataTransfer.files[0];
     }
-    updateDif(n, "create", true);
+    updateDif(n, "update", true);
   };
 
   const get_thumbnail = (file) => {
