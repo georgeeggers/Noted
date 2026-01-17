@@ -46,19 +46,19 @@ Pretty self explanatory. Clicking the delete button will delete that board and a
 
 Upon loading into a board, or creating a new one, you will be met with this UI.
 
-<img width="640" height="400" alt="Screenshot 2025-12-11 at 8 37 35 PM" src="https://github.com/user-attachments/assets/50b5e2b1-fa5e-48b5-a985-4a53d9fd584a" />
+<img width="640" height="500" alt="Screenshot 2026-01-17 at 12 49 14 PM" src="https://github.com/user-attachments/assets/b461eafa-362a-497b-8d23-e77046a5f57a" />
 
 ### Control Bar
 
-You may notice the primary control bar at the bottom of the window. The four buttons on the left will spawn different nodes in the main board. From left to right, they will spawn a Text Node, ToDo Node, Image Node, and File Node. The button on the right of the divider will sort the nodes, but we'll go over that a little bit later.
+You may notice the primary control bar at the bottom of the window. The four buttons on the left will spawn different nodes in the main board. From left to right, they will spawn a Text Node, ToDo Node, Image Node, and File Node. The button on the right of the divider will toggle between node mode and line mode. We'll go over these two modes a bit later.
 
-<img width="278" height="53" alt="Screenshot 2025-12-11 at 8 41 39 PM" src="https://github.com/user-attachments/assets/0453523a-0f29-452c-804a-b2a5c2d8a962" />
+<img width="275" height="58" alt="Screenshot 2026-01-17 at 12 50 34 PM" src="https://github.com/user-attachments/assets/3daad6c8-9b68-43cf-b638-1f1ff9722b8a" />
 
 ### Spawning Nodes
 
 Clicking one of these 4 buttons will spawn a towards the center of the screen. Each node consists of a title, some sort of content, and the control bar at the bottom. 
 
-<img width="640" height="400" alt="Screenshot 2025-12-11 at 8 45 46 PM" src="https://github.com/user-attachments/assets/710a749a-56da-4fb0-99f9-a0c7ab47bfd8" />
+<img width="640" height="400" alt="Screenshot 2026-01-17 at 12 52 07 PM" src="https://github.com/user-attachments/assets/f4501c78-448b-45fb-839c-269ec7e59aeb" />
 
 ### Node Controls
 
@@ -103,6 +103,28 @@ The image node does exactly what it sounds like. It stores and displays an image
 The file node works similarly to the image node, with one key difference. You can store files of any type. This is particularly useful when coupled with a self-hosted server, as it lets you share larger files across devices! You can easily download the files stored by pressing the download button in the control bar at the bottom of each File Node.
 
 <img width="448" height="223" alt="image" src="https://github.com/user-attachments/assets/6258142f-a350-4f59-97c4-f7237e235fe0" />
+
+## Lines
+
+Pressing the arrow button on the control bar will toggle between node mode and line mode. When in line mode, the control bar will change to have display various lines types
+
+<img width="275" height="56" alt="Screenshot 2026-01-17 at 12 54 11 PM" src="https://github.com/user-attachments/assets/e1ea8cac-a550-484d-882d-a90ba72cf814" />
+
+### Creating Lines
+
+When in line mode, your current line type will be highlighted in the theme's main color. When in line mode, clicking any node will highlight it, marking it as the start node for your line.
+
+<img width="168" height="168" alt="Screenshot 2026-01-17 at 12 55 36 PM" src="https://github.com/user-attachments/assets/c5228201-2e10-474a-aba6-af44f4e12371" />
+
+When a node is highlighted, clicking any other node will create a line between the two. There are four different types of lines to choose from. Simple solid lines, one way arrows, two way arrows, and arrow only lines. 
+
+<img width="923" height="787" alt="Screenshot 2026-01-17 at 12 58 34 PM" src="https://github.com/user-attachments/assets/0cd242f2-8f3d-43c6-9817-27c5d7747280" />
+
+## Deleting Lines
+
+When in line mode, hovering over a line will highlight it. Clicking it will delete it.
+
+<img width="260" height="202" alt="Screenshot 2026-01-17 at 12 59 51 PM" src="https://github.com/user-attachments/assets/e15a9554-2663-473b-866e-3b19b418bd49" />
 
 ## Shortcuts
 
