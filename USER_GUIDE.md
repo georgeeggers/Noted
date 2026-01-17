@@ -32,7 +32,7 @@ Clicking the rename button will turn it into a text box where you can input the 
 
 ### Duplicating
 
-Clicking the duplicate button will create a copy of a board, and all of the nodes associated with it. Due to technical issues from pocketbase, duplicating cloud boards is currently unavailable
+Clicking the duplicate button will create a copy of a board, and all of the nodes associated with it. Due to technical issues from pocketbase, duplicating cloud boards is currently unavailable, and only the nodes are copied.
 
 <img width="431" height="50" alt="Screenshot 2026-01-12 at 11 58 01 PM" src="https://github.com/user-attachments/assets/7e5694de-44dc-4728-9c9e-5e8ec159f5d8" />
 
@@ -51,7 +51,6 @@ Upon loading into a board, or creating a new one, you will be met with this UI.
 ### Control Bar
 
 You may notice the primary control bar at the bottom of the window. The four buttons on the left will spawn different nodes in the main board. From left to right, they will spawn a Text Node, ToDo Node, Image Node, and File Node. The button on the right of the divider will sort the nodes, but we'll go over that a little bit later.
-
 
 <img width="278" height="53" alt="Screenshot 2025-12-11 at 8 41 39 PM" src="https://github.com/user-attachments/assets/0453523a-0f29-452c-804a-b2a5c2d8a962" />
 
